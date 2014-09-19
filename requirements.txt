@@ -1,5 +1,9 @@
 Flask
-python-rq
+Flask-Login
+itsdangerous
+rq
 boto
 fabric
 zope.interface
+pymongo
+Flask-PyMongo

@@ -1,9 +1,13 @@
 class WorkerException(Exception):
-    message = ""
+    message = "Worker error"
 
 
 class NoSuchProvider(WorkerException):
     message = "No such provider exists"
+
+
+class InstanceCreateException(WorkerException):
+    message = "Could not create instance"
 
 
 class InstanceException(WorkerException):

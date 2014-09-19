@@ -15,6 +15,12 @@ DEBUG = True
 APP_HOST = '0.0.0.0'
 APP_PORT = 5000
 
+SECRET_KEY = "x8cWiF00CZc2kMS1YUPqfuWnyh1BkaH6wf3ICJdsYjVkkKkgFdqc"
+
+TOKEN_EXPIRES = 12
+
+MONGO_DBNAME = 'xdocker'
+
 
 # Worker part
 
