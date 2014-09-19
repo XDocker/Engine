@@ -28,28 +28,37 @@ class AmazonProvider(MixinProvider):
 
     def __init__(self, params, **kwargs):
         super(AmazonProvider, self).__init__(params, **kwargs)
-        region = params.get('region', self.default_region)
-        self.ami = params.get("instanceAmi", self.default_ami)
-        self.instance_type = params.get("instanceType",
-                self.default_instance_type)
+        self._connection = None
+
+    @property
+    def connection(self):
+        return self._connection or self._connect()
+
+    def _connect(self):
+        params = self.init_data
         access_key = decrypt_key(params['apiKey'])
         secret_key = decrypt_key(params['secretKey'])
-        self.connection = boto.ec2.connect_to_region(
+        region = params.get('region', self.default_region)
+        self._connection = boto.ec2.connect_to_region(
             region,
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key
             )
-        self.init_data = params
+        return self._connection
 
     def create_instance(self):
         self.logger.debug("Spinning up new instance")
         self._create_key()
         self._create_security_group()
+
+        ami = self.init_data.get("instanceAmi", self.default_ami)
+        instance_type = self.init_data.get("instanceType",
+                self.default_instance_type)
         reservation = self.connection.run_instances(
-                self.ami,
+                ami,
                 key_name=self.keyname,
                 security_groups=[SECURITY_GROUP_NAME],
-                instance_type=self.instance_type
+                instance_type=instance_type
                 )
         instance = reservation.instances[0]
         status = instance.update()
@@ -104,7 +113,7 @@ class AmazonProvider(MixinProvider):
                 self.logger.info("Creating new security key")
                 key = self.connection.create_key_pair(self.keyname)
                 key.save(self.user_directory)
-                self.logger.debug(
+                self.logger.info(
                     "Saving security key to {}".format(self.user_directory)
                     )
             else:

@@ -55,6 +55,7 @@ class MixinProvider(object):
         self.user_directory = get_user_directory(self.username)
         self.keyname = params.get('keyname', self.default_keyname)
         self.logger = logger or logging.getLogger(self.username)
+        self.init_data = params
 
     def _get_key_path(self):
         return os.path.join(self.user_directory, "{}{}".format(self.keyname,
