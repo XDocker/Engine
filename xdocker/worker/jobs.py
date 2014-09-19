@@ -11,22 +11,20 @@ from rq import get_current_job
 
 from providers import registry
 
-from utils import decrypt_key, get_user_directory
+from utils import decrypt_key, get_user_directory, get_user_log_directory
 from worker.exceptions import NoSuchProvider
-from config import LOG_DIRECTORY
 
 
 
-def get_logger():
-    job = get_current_job()
-    username = job.args[0]['username']
+def get_logger(username=None):
+    if username is None:
+        job = get_current_job()
+        username = job.args[0]['username']
     user_directory = get_user_directory(username)
     logger = logging.getLogger(username)
     logger.setLevel(logging.DEBUG)
-    log_directory = os.path.join(user_directory, LOG_DIRECTORY)
-    if not os.path.exists(log_directory):
-        os.mkdir(log_directory)
-    handler = logging.FileHandler(os.path.join(log_directory, job.id), 'w')
+    log_directory = get_user_log_directory(username)
+    handler = logging.FileHandler(os.path.join(log_directory, job.id))
     logger.addHandler(handler)
     return logger
 
@@ -67,12 +65,16 @@ def get_provider_class(provider):
         raise NoSuchProvider()
 
 
-def init_provider(data):
-    logger = get_logger()
+def init_provider(data, not_job=False):
+    if not_job:
+        logger = None
+    else:
+        logger = get_logger()
     provider_name = data['cloudProvider']
     Provider = get_provider_class(provider_name)
     provider = Provider(data, logger=logger)
     return provider
+
 
 
 def deploy(data):

@@ -3,9 +3,9 @@ import os
 ROOT_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)
 DATA_DIRECTORY = os.path.join(ROOT_PATH, os.pardir, 'data')
 USER_DIRECTORY = os.path.join(DATA_DIRECTORY, 'users')
-LOG_DIRECTORY = 'logs'
+LOG_DIRECTORY_NAME = 'logs'
 
-for direc in (DATA_DIRECTORY, USER_DIRECTORY, LOG_DIRECTORY):
+for direc in (DATA_DIRECTORY, USER_DIRECTORY):
     if not os.path.exists(direc):
         os.mkdir(direc)
 
@@ -17,7 +17,7 @@ APP_PORT = 5000
 
 SECRET_KEY = "x8cWiF00CZc2kMS1YUPqfuWnyh1BkaH6wf3ICJdsYjVkkKkgFdqc"
 
-TOKEN_EXPIRES = 12
+TOKEN_EXPIRES = 12000
 
 MONGO_DBNAME = 'xdocker'
 

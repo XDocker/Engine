@@ -15,7 +15,7 @@ from redis import Redis
 
 from worker import jobs
 from worker.exceptions import WorkerException
-from utils import encrypt_key, decrypt_key
+from utils import encrypt_key, decrypt_key, get_job_log
 
 
 app = Flask(__name__)
@@ -162,12 +162,16 @@ class BadInput(RequestException):
 
 
 @app.errorhandler(AppException)
+@app.errorhandler(WorkerException)
 def error_handler(error):
     response = make_response(
         message=error.message,
         fail=True
         )
-    response.status_code = error.status_code
+    try:
+        response.status_code = error.status_code
+    except AttributeError:
+        pass
     return response
 
 
@@ -247,6 +251,14 @@ def job_status(job_id):
         status = 'Completed'
     res_dict['job_status'] = status
     return make_response(**res_dict)
+
+
+@app.route("/getLog/<job_id>", methods=["POST"])
+@login_required
+def get_log(job_id):
+    data = check_args(tuple())
+    log = get_job_log(data['username'], job_id)
+    return make_response(log=log)
 
 
 @app.route("/uploadKey", methods=["POST"])
