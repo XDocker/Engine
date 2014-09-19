@@ -69,6 +69,11 @@ class MixinProvider(object):
             key = fp.read()
         return key
 
+    def save_key(self, key):
+        key_path = self._get_key_path()
+        with open(key_path, 'w') as fp:
+            fp.write(key)
+
 
 
 class MixinInstance(object):

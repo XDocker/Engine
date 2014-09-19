@@ -14,6 +14,8 @@ from rq import Connection, Queue
 from redis import Redis
 
 from worker import jobs
+from worker.exceptions import WorkerException
+from utils import encrypt_key, decrypt_key
 
 
 app = Flask(__name__)
@@ -176,6 +178,8 @@ def check_args(args_list):
         keys = data.keys()
     except StandardError:
         raise BadInput("Missing json data")
+    if current_user.is_authenticated():
+        data['username'] = current_user.username
 
     missing = set(args_list) - set(keys)
     if missing:
@@ -230,8 +234,6 @@ def instance_action():
 def job_status(job_id):
     res_dict = {}
 
-    print current_user
-
     job = q.fetch_job(job_id)
     if job:
         status = job.get_status()
@@ -250,13 +252,21 @@ def job_status(job_id):
 @app.route("/uploadKey", methods=["POST"])
 @login_required
 def upload_key():
-    pass
+    data = check_args(('cloudProvider', 'key'))
+    provider = jobs.init_provider(data, True)
+    key = decrypt_key(data['key'])
+    provider.save_key(key)
+    return make_response()
 
 
 @login_required
-@app.route("/downloadKey")
+@app.route("/downloadKey", methods=["POST"])
 def download_key():
-    pass
+    data = check_args(('cloudProvider', ))
+    provider = jobs.init_provider(data, True)
+    key = encrypt_key(provider.get_key())
+    return make_response(key=key)
+
 
 if __name__ == '__main__':
     app.run(host=app.config['APP_HOST'], port=app.config['APP_PORT'])
