@@ -1,0 +1,520 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>XDocker engine api methods &mdash; XDocker 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="XDocker 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to XDocker’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to XDocker’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">XDocker 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="xdocker-engine-api-methods">
+<h1>XDocker engine api methods<a class="headerlink" href="#xdocker-engine-api-methods" title="Permalink to this headline">¶</a></h1>
+<dl class="post">
+<dt id="post--authenticate">
+<tt class="descname">POST </tt><tt class="descname">/authenticate</tt><a class="headerlink" href="#post--authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticate method</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /authenticate HTTP/1.1
+{
+    &quot;password&quot;: &quot;test&quot;,
+    &quot;username&quot;: &quot;test&quot;
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;token&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;token&gt;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>username</strong> (<em>string</em>) &#8211; Username to authenticate</li>
+<li><strong>password</strong> (<em>string</em>) &#8211; Password for the user</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> &#8211; user does not exist</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li><strong>token</strong> (<em>string</em>) &#8211; Token to use</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--downloadKey">
+<tt class="descname">POST </tt><tt class="descname">/downloadKey</tt><a class="headerlink" href="#post--downloadKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download security key</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /downloadKey HTTP/1.1
+{
+    &quot;token&quot;: &quot;&lt;token&gt;&quot;,
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;key&gt;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>token</strong> (<em>string</em>) &#8211; Authentication token</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; not authorized</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>string</em>) &#8211; encrypted security key</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--uploadKey">
+<tt class="descname">POST </tt><tt class="descname">/uploadKey</tt><a class="headerlink" href="#post--uploadKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload security key</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /uploadKey HTTP/1.1
+{
+    &quot;token&quot;: &quot;&lt;token&gt;&quot;,
+    &quot;key&quot;: &quot;&lt;key&quot;&gt;,
+    &quot;cloudProvider&quot;: &quot;amazon&quot;
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>token</strong> (<em>string</em>) &#8211; Authentication token</li>
+<li><strong>key</strong> (<em>string</em>) &#8211; Encrypted security key</li>
+<li><strong>cloudProvider</strong> (<em>string</em>) &#8211; cloud provider name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; not authorized</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--register">
+<tt class="descname">POST </tt><tt class="descname">/register</tt><a class="headerlink" href="#post--register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register method</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /register HTTP/1.1
+{
+    &quot;password&quot;: &quot;test&quot;,
+    &quot;username&quot;: &quot;test&quot;
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>username</strong> (<em>string</em>) &#8211; Username to register</li>
+<li><strong>password</strong> (<em>string</em>) &#8211; Password for the user</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.10">409 Conflict</a> &#8211; user already exists</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--instance">
+<tt class="descname">POST </tt><tt class="descname">/instance</tt><a class="headerlink" href="#post--instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform action on instance</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /instance HTTP/1.1
+{
+    &quot;token&quot;: &quot;&lt;token&gt;&quot;,
+    &quot;secretKey&quot;: &quot;&lt;api secret&gt;&quot;,
+    &quot;apiKey&quot;: &quot;&lt;api key&gt;&quot;,
+    &quot;instanceAction&quot;: &quot;stop&quot;,
+    &quot;cloudProvider&quot;: &quot;amazon&quot;
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;job_id&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;job id&gt;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>token</strong> (<em>string</em>) &#8211; Authentication token</li>
+<li><strong>cloudProvider</strong> (<em>string</em>) &#8211; cloud provider name</li>
+<li><strong>apiKey</strong> (<em>string</em>) &#8211; Provider`s api key</li>
+<li><strong>secretKey</strong> (<em>string</em>) &#8211; Provider`s secret key</li>
+<li><strong>instanceAction</strong> (<em>string</em>) &#8211; Action to perform on instance(start, stop, restart, terminate)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; not authorized</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li><strong>job_id</strong> (<em>string</em>) &#8211; Instance job id</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--run">
+<tt class="descname">POST </tt><tt class="descname">/run</tt><a class="headerlink" href="#post--run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run instance and deploy dockerhub package</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /run HTTP/1.1
+{
+    &quot;token&quot;: &quot;&lt;token&gt;&quot;,
+    &quot;secretKey&quot;: &quot;&lt;api secret&gt;&quot;,
+    &quot;packageName&quot;: &quot;xdocker/securitymonkey&quot;,
+    &quot;dockerParams&quot;: {&quot;ports&quot;: [443, 5000], &quot;env&quot;: {}, &quot;tag&quot;: &quot;v1&quot;},
+    &quot;apiKey&quot;: &quot;&lt;api key&gt;&quot;,
+    &quot;cloudProvider&quot;: &quot;amazon&quot;
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;job_id&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;job id&gt;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>token</strong> (<em>string</em>) &#8211; Authentication token</li>
+<li><strong>cloudProvider</strong> (<em>string</em>) &#8211; cloud provider name</li>
+<li><strong>apiKey</strong> (<em>string</em>) &#8211; Provider`s api key</li>
+<li><strong>secretKey</strong> (<em>string</em>) &#8211; Provider`s secret key</li>
+<li><strong>packageName</strong> (<em>string</em>) &#8211; dockerhub package name</li>
+<li><strong>dockerParams</strong> (<em>array</em>) &#8211; package params for docker to start</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; not authorized</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li><strong>job_id</strong> (<em>string</em>) &#8211; Deployment job id</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--getDeploymentStatus-(job_id)">
+<tt class="descname">POST </tt><tt class="descname">/getDeploymentStatus/</tt><big>(</big><em>job_id</em><big>)</big><a class="headerlink" href="#post--getDeploymentStatus-(job_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get job status</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /getDeploymentStatus/&lt;job_id&gt; HTTP/1.1
+{
+    &quot;token&quot;: &quot;&lt;token&gt;&quot;
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;job_status&quot;</span><span class="p">:</span> <span class="s2">&quot;Completed&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>token</strong> (<em>string</em>) &#8211; Authentication token</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; not authorized</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li><strong>job_status</strong> (<em>string</em>) &#8211; Job status</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--getLog-(job_id)">
+<tt class="descname">POST </tt><tt class="descname">/getLog/</tt><big>(</big><em>job_id</em><big>)</big><a class="headerlink" href="#post--getLog-(job_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get log for job</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /getLog/&lt;job_id&gt; HTTP/1.1
+{
+    &quot;token&quot;: &quot;&lt;token&gt;&quot;,
+    &quot;line_num&quot;: 10
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;log&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;log lines&gt;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>token</strong> (<em>string</em>) &#8211; Authentication token</li>
+<li><strong>line_num</strong> (<em>integer</em>) &#8211; Number of log lines to return(max 100, 10 default)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; not authorized</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li><strong>log</strong> (<em>string</em>) &#8211; Last logs</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to XDocker&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="http-routingtable.html" title="HTTP Routing Table"
+             >routing table</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to XDocker’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">XDocker 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Artemiy Rodionov.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -137,10 +137,12 @@ class UserException(AppException):
 
 class UserDoesNotExist(UserException):
     message = "User does not exist"
+    status_code = 404
 
 
 class UserAlreadyExists(UserException):
     message = "User already exists"
+    status_code = 409
 
 
 class JobWorkerException(AppException):
@@ -152,9 +154,11 @@ class RequestException(AppException):
 
 class TokenExpired(RequestException):
     message = "Your token has expired"
+    status_code = 401
 
 class BadToken(RequestException):
     message = "Bad token"
+    status_code = 401
 
 
 class BadInput(RequestException):
@@ -193,6 +197,40 @@ def check_args(args_list):
 
 @app.route("/authenticate", methods=["POST"])
 def authenticate():
+    """Authenticate method
+
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /authenticate HTTP/1.1
+        {
+            "password": "test",
+            "username": "test"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+            "token": "<token>"
+        }
+
+    :jsonparam string username: Username to authenticate
+    :jsonparam string password: Password for the user
+    :statuscode 200: no error
+    :statuscode 404: user does not exist
+    :>json string token: Token to use
+    """
     data = check_args(('username', 'password'))
     user = User(data['username'])
     if user.verify(data['password']):
@@ -204,6 +242,38 @@ def authenticate():
 
 @app.route("/register", methods=["POST"])
 def register():
+    """Register method
+
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /register HTTP/1.1
+        {
+            "password": "test",
+            "username": "test"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+        }
+
+    :jsonparam string username: Username to register
+    :jsonparam string password: Password for the user
+    :statuscode 200: no error
+    :statuscode 409: user already exists
+    """
     data = check_args(('username', 'password'))
     username = data.pop('username')
     passwd = data.pop('password')
@@ -214,6 +284,47 @@ def register():
 @app.route("/run", methods=["POST"])
 @login_required
 def run_instance():
+    """Run instance and deploy dockerhub package
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /run HTTP/1.1
+        {
+            "token": "<token>",
+            "secretKey": "<api secret>",
+            "packageName": "xdocker/securitymonkey",
+            "dockerParams": {"ports": [443, 5000], "env": {}, "tag": "v1"},
+            "apiKey": "<api key>",
+            "cloudProvider": "amazon"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+            "job_id": "<job id>"
+        }
+
+    :jsonparam string token: Authentication token
+    :jsonparam string cloudProvider: cloud provider name
+    :jsonparam string apiKey: Provider`s api key
+    :jsonparam string secretKey: Provider`s secret key
+    :jsonparam string packageName: dockerhub package name
+    :jsonparam array dockerParams: package params for docker to start
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    :>json string job_id: Deployment job id
+    """
     data = check_args(
             ('cloudProvider', 'apiKey', 'secretKey', 'packageName', 'username')
             )
@@ -225,6 +336,46 @@ def run_instance():
 @app.route("/instance", methods=["POST"])
 @login_required
 def instance_action():
+    """Perform action on instance
+
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /instance HTTP/1.1
+        {
+            "token": "<token>",
+            "secretKey": "<api secret>",
+            "apiKey": "<api key>",
+            "instanceAction": "stop",
+            "cloudProvider": "amazon"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+            "job_id": "<job id>"
+        }
+
+    :jsonparam string token: Authentication token
+    :jsonparam string cloudProvider: cloud provider name
+    :jsonparam string apiKey: Provider`s api key
+    :jsonparam string secretKey: Provider`s secret key
+    :jsonparam string instanceAction: Action to perform on instance(start, stop, restart, terminate)
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    :>json string job_id: Instance job id
+    """
     data = check_args(
             ('cloudProvider', 'apiKey', 'secretKey', 'instanceAction',
             'instanceId')
@@ -236,6 +387,37 @@ def instance_action():
 @app.route("/getDeploymentStatus/<job_id>", methods=["POST"])
 @login_required
 def job_status(job_id):
+    """Get job status
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /getDeploymentStatus/<job_id> HTTP/1.1
+        {
+            "token": "<token>"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+            "job_status": "Completed"
+        }
+
+    :jsonparam string token: Authentication token
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    :>json string job_status: Job status
+    """
     res_dict = {}
 
     job = q.fetch_job(job_id)
@@ -256,6 +438,40 @@ def job_status(job_id):
 @app.route("/getLog/<job_id>", methods=["POST"])
 @login_required
 def get_log(job_id):
+    """Get log for job
+
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /getLog/<job_id> HTTP/1.1
+        {
+            "token": "<token>",
+            "line_num": 10
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+            "log": "<log lines>"
+        }
+
+    :jsonparam string token: Authentication token
+    :jsonparam integer line_num: Number of log lines to return(max 100, 10 default)
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    :>json string log: Last logs
+    """
     data = check_args(tuple())
     log = get_job_log(data['username'], job_id)
     return make_response(log=log)
@@ -264,6 +480,40 @@ def get_log(job_id):
 @app.route("/uploadKey", methods=["POST"])
 @login_required
 def upload_key():
+    """Upload security key
+
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /uploadKey HTTP/1.1
+        {
+            "token": "<token>",
+            "key": "<key">,
+            "cloudProvider": "amazon"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+        }
+
+    :jsonparam string token: Authentication token
+    :jsonparam string key: Encrypted security key
+    :jsonparam string cloudProvider: cloud provider name
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    """
     data = check_args(('cloudProvider', 'key'))
     provider = jobs.init_provider(data, True)
     key = decrypt_key(data['key'])
@@ -274,6 +524,38 @@ def upload_key():
 @login_required
 @app.route("/downloadKey", methods=["POST"])
 def download_key():
+    """Download security key
+
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /downloadKey HTTP/1.1
+        {
+            "token": "<token>",
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+            "key": "<key>"
+        }
+
+    :jsonparam string token: Authentication token
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    :>json string key: encrypted security key
+    """
     data = check_args(('cloudProvider', ))
     provider = jobs.init_provider(data, True)
     key = encrypt_key(provider.get_key())
