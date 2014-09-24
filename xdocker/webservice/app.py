@@ -65,7 +65,7 @@ class User(UserMixin):
             hashed = passwd
         if hashed == self.user['password']:
             return True
-        return False
+        raise InvalidPassword(self)
 
     @classmethod
     def create(cls, username, password, **kwargs):
@@ -105,7 +105,11 @@ def load_user_from_request(request):
         except itsdangerous.BadSignature:
             raise BadToken()
         user = User(data[0])
-        if user.verify(data[1], is_hash=True):
+        try:
+            user.verify(data[1], is_hash=True)
+        except InvalidPassword:
+            pass
+        else:
             return user
     return None
 
@@ -143,6 +147,11 @@ class UserDoesNotExist(UserException):
 class UserAlreadyExists(UserException):
     message = "User already exists"
     status_code = 409
+
+
+class InvalidPassword(UserException):
+    message = "Invalid password"
+    status_code = 401
 
 
 class JobWorkerException(AppException):
@@ -233,10 +242,9 @@ def authenticate():
     """
     data = check_args(('username', 'password'))
     user = User(data['username'])
-    if user.verify(data['password']):
-        token = user.get_auth_token()
-        return make_response(token=token)
-    return make_response()
+    user.verify(data['password'])
+    token = user.get_auth_token()
+    return make_response(token=token)
 
 
 
