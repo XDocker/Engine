@@ -28,6 +28,8 @@ SECURITY_GROUP_NAME = 'xervmon'
 KEY_NAME = 'xervmon'
 KEY_EXTENSION = '.pem'
 
+STORE_LOGS = 50 # hours
+
 MAX_INSTALL_RETRY = 3
 
 SSH_PORT = 22

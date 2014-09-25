@@ -17,7 +17,7 @@ def encrypt_key(key):
 
 
 def get_user_directory(username):
-    directory =  os.path.join(USER_DIRECTORY, username)
+    directory = os.path.join(USER_DIRECTORY, username)
     if not os.path.exists(directory):
         os.mkdir(directory)
     return directory
