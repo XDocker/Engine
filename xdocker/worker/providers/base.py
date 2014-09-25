@@ -9,8 +9,9 @@ from fabric.context_managers import settings
 from rq import get_current_job
 
 from utils import decrypt_key, get_user_directory
-from config import KEY_EXTENSION, KEY_NAME
+from config import KEY_EXTENSION, KEY_NAME, MAX_INSTALL_RETRY
 from worker.exceptions import KeyDoesNotExist
+
 
 class IProvider(Interface):
     provider_name = Attribute("""Provider name""")
@@ -40,7 +41,6 @@ class IInstance(Interface):
 
     def terminate(self):
         """Terminate instance"""
-    pass
 
 
 registry = {}
@@ -91,7 +91,8 @@ class MixinInstance(object):
 
     def ssh(self):
         return settings(key_filename=self.provider._get_key_path(),
-                host_string=self.host, user=self.user)
+                host_string=self.host, user=self.user,
+                connection_attempts=MAX_INSTALL_RETRY)
 
     def restart(self):
         self.logger.info("Restarting the instance: {}".format(self))

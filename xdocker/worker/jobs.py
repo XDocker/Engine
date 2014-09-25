@@ -10,8 +10,10 @@ from rq import get_current_job
 
 from providers import registry
 
-from utils import decrypt_key, get_user_directory, get_user_log_directory
-from worker.exceptions import NoSuchProvider
+from config import MAX_INSTALL_RETRY
+from utils import decrypt_key, get_user_directory, get_user_log_directory, \
+        get_logger, install_remote_logger
+from worker.exceptions import NoSuchProvider, InstanceDoesNotExist
 
 
 
@@ -79,7 +81,18 @@ def deploy(data):
         instance = provider.create_instance()
     with instance.ssh():
         logger.info("Installing package to {}".format(instance))
-        install_docker(data['packageName'], data['dockerParams'])
+        # install_docker(data['packageName'], data['dockerParams'])
+        i = 0
+        while i < MAX_INSTALL_RETRY:
+            try:
+                install_docker(data['packageName'], data['dockerParams'])
+                break
+            except Exception, e:
+                logger.error("Error installing {}".format(str(e)))
+                i += 1
+
+
+
 
     return {"instance_id": instance.instance_id, "public_dns":
             instance.host}
