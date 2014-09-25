@@ -55,7 +55,7 @@ class User(UserMixin):
 
     @staticmethod
     def hash_pass(passwd):
-        salted = passwd + app.secret_key
+        salted = passwd
         return md5.new(salted).hexdigest()
 
     def verify(self, passwd, is_hash=False):
@@ -242,7 +242,7 @@ def authenticate():
     """
     data = check_args(('username', 'password'))
     user = User(data['username'])
-    user.verify(data['password'])
+    user.verify(data['password'], is_hash=True)
     token = user.get_auth_token()
     return make_response(token=token)
 
