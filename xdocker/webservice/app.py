@@ -336,7 +336,7 @@ def run_instance():
     data = check_args(
             ('cloudProvider', 'apiKey', 'secretKey', 'packageName', 'username')
             )
-    job = q.enqueue_call(jobs.deploy, args=(data,), timeout=300,
+    job = q.enqueue_call(jobs.deploy, args=(data,), timeout=1200,
             result_ttl=86400)
     return make_response(job_id=job.id)
 
@@ -436,7 +436,7 @@ def job_status(job_id):
         status = 'Does not exist'
 
     if status == 'failed':
-        res_dict['job_log'] = 'Logs'
+        res_dict['job_log'] = get_job_log(current_user.username, job_id)
     elif status == 'finished':
         status = 'Completed'
     res_dict['job_status'] = status

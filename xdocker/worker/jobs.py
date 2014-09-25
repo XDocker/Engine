@@ -3,7 +3,6 @@
 
 import os
 import time
-import logging
 
 from fabric.context_managers import settings
 from fabric.api import env, sudo, put
@@ -16,30 +15,24 @@ from worker.exceptions import NoSuchProvider
 
 
 
-def get_logger(username=None):
-    if username is None:
-        job = get_current_job()
-        username = job.args[0]['username']
-    user_directory = get_user_directory(username)
-    logger = logging.getLogger(username)
-    logger.setLevel(logging.DEBUG)
-    log_directory = get_user_log_directory(username)
-    handler = logging.FileHandler(os.path.join(log_directory, job.id))
-    logger.addHandler(handler)
-    return logger
-
-
 def instance_action(data):
     action = data['instanceAction']
+    instance_id = data['instanceId']
     provider = init_provider(data)
-    instance = provider.get_instance(data['instanceId'])
+    try:
+        instance = provider.get_instance(instance_id)
+    except InstanceDoesNotExist:
+        provider.logger.warning(
+                "Instance {} does not exist".format(instance_id))
+        raise
     method_action = getattr(instance, action)
     method_action()
-    return {"instance_id": instance.instance_id, "state":
+    return {"instance_id": instance_id, "state":
             instance.instance.state}
 
 
 def install_docker(package_name, params):
+    install_remote_logger('paramiko')
     with settings(warn_only=True):
         sudo('apt-get update')
     sudo('apt-get install -y docker.io')

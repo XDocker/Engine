@@ -1,6 +1,11 @@
 import os
+import logging
 
 from config import USER_DIRECTORY, LOG_DIRECTORY_NAME
+from rq import get_current_job
+
+
+LOGGER_HANDLER_NAME = "xdocker"
 
 
 def decrypt_key(key):
@@ -35,6 +40,31 @@ def get_job_log(username, job_id, line_num=10):
         line_num = 100
     with open(job_fp) as fp:
         return tail(fp, line_num)
+
+
+def get_logger(username=None):
+    if username is None:
+        job = get_current_job()
+        username = job.args[0]['username']
+    user_directory = get_user_directory(username)
+    logger = logging.getLogger(username)
+    logger.setLevel(logging.DEBUG)
+    if not logger.handlers or not LOGGER_HANDLER_NAME in map(lambda l:l.name,
+            logger.handlers):
+        log_directory = get_user_log_directory(username)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler = logging.FileHandler(os.path.join(log_directory, job.id))
+        handler.setFormatter(formatter)
+        handler.name = LOGGER_HANDLER_NAME
+        logger.addHandler(handler)
+    return logger
+
+
+def install_remote_logger(name):
+    logger = get_logger()
+    handler = logger.handlers[0]
+    remote_logger = logging.getLogger(name)
+    remote_logger.addHandler(handler)
 
 
 def tail(f, window=20):

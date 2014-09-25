@@ -7,9 +7,8 @@ import boto.ec2
 from base import IProvider, MixinProvider, IInstance, MixinInstance
 
 import logging
-import logging.handlers
 
-from utils import decrypt_key, get_user_directory
+from utils import decrypt_key, get_user_directory, install_remote_logger
 
 from worker.exceptions import InstanceDoesNotExist, InstanceException
 from config import USER_DIRECTORY, SSH_PORT, HTTPS_PORT, HTTP_PORT, \
@@ -29,6 +28,8 @@ class AmazonProvider(MixinProvider):
     def __init__(self, params, **kwargs):
         super(AmazonProvider, self).__init__(params, **kwargs)
         self._connection = None
+
+        install_remote_logger('boto')
 
     @property
     def connection(self):
