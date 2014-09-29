@@ -54,8 +54,9 @@ def install_docker(package_name, params):
 
 
 def get_provider_class(provider):
+    provider_name = provider.lower()
     try:
-        return registry[provider]
+        return registry[provider_name]
     except KeyError:
         raise NoSuchProvider()
 

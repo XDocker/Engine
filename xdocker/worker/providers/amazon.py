@@ -18,7 +18,7 @@ from config import USER_DIRECTORY, SSH_PORT, HTTPS_PORT, HTTP_PORT, \
 class AmazonProvider(MixinProvider):
     zope.interface.implements(IProvider)
 
-    provider_name = "amazon"
+    provider_name = "amazon aws"
 
     cidr = '0.0.0.0/0'
     default_region = 'us-west-2'

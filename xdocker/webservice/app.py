@@ -305,7 +305,7 @@ def run_instance():
             "packageName": "xdocker/securitymonkey",
             "dockerParams": {"ports": [443, 5000], "env": {}, "tag": "v1"},
             "apiKey": "<api key>",
-            "cloudProvider": "amazon"
+            "cloudProvider": "amazon aws"
         }
 
     **Example response**
@@ -357,7 +357,7 @@ def instance_action():
             "secretKey": "<api secret>",
             "apiKey": "<api key>",
             "instanceAction": "stop",
-            "cloudProvider": "amazon"
+            "cloudProvider": "amazon aws"
         }
 
     **Example response**
@@ -499,7 +499,7 @@ def upload_key():
         {
             "token": "<token>",
             "key": "<key">,
-            "cloudProvider": "amazon"
+            "cloudProvider": "amazon aws"
         }
 
     **Example response**
