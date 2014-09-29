@@ -303,7 +303,8 @@ def run_instance():
             "token": "<token>",
             "secretKey": "<api secret>",
             "packageName": "xdocker/securitymonkey",
-            "dockerParams": {"ports": [443, 5000], "env": {}, "tag": "v1"},
+            "dockerParams": {"ports": [443, 5000], "env": {}, "tag": "v1",
+            "cmd": "/home/ubuntu/securitymonkey.sh"},
             "apiKey": "<api key>",
             "cloudProvider": "amazon aws"
         }
@@ -326,9 +327,14 @@ def run_instance():
     :jsonparam string token: Authentication token
     :jsonparam string cloudProvider: cloud provider name
     :jsonparam string apiKey: Provider`s api key
+    :jsonparam string instanceId: Instance id to use for docker deployment(optional)
     :jsonparam string secretKey: Provider`s secret key
     :jsonparam string packageName: dockerhub package name
     :jsonparam array dockerParams: package params for docker to start
+    :jsonparam list dockerParams.ports: list of ports
+    :jsonparam string dockerParams.tag: docker package tag
+    :jsonparam string dockerParams.cmd: docker command to run
+    :jsonparam array dockerParams.env: environment variables to pass to docker.  Some values can be templated using brackets e.g. {host} converts to instance`s public dns
     :statuscode 200: no error
     :statuscode 401: not authorized
     :>json string job_id: Deployment job id

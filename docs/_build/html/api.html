@@ -161,7 +161,7 @@
 {
     &quot;token&quot;: &quot;&lt;token&gt;&quot;,
     &quot;key&quot;: &quot;&lt;key&quot;&gt;,
-    &quot;cloudProvider&quot;: &quot;amazon&quot;
+    &quot;cloudProvider&quot;: &quot;amazon aws&quot;
 }
 </pre></div>
 </div>
@@ -255,7 +255,7 @@
     &quot;secretKey&quot;: &quot;&lt;api secret&gt;&quot;,
     &quot;apiKey&quot;: &quot;&lt;api key&gt;&quot;,
     &quot;instanceAction&quot;: &quot;stop&quot;,
-    &quot;cloudProvider&quot;: &quot;amazon&quot;
+    &quot;cloudProvider&quot;: &quot;amazon aws&quot;
 }
 </pre></div>
 </div>
@@ -312,9 +312,10 @@
     &quot;token&quot;: &quot;&lt;token&gt;&quot;,
     &quot;secretKey&quot;: &quot;&lt;api secret&gt;&quot;,
     &quot;packageName&quot;: &quot;xdocker/securitymonkey&quot;,
-    &quot;dockerParams&quot;: {&quot;ports&quot;: [443, 5000], &quot;env&quot;: {}, &quot;tag&quot;: &quot;v1&quot;},
+    &quot;dockerParams&quot;: {&quot;ports&quot;: [443, 5000], &quot;env&quot;: {}, &quot;tag&quot;: &quot;v1&quot;,
+    &quot;cmd&quot;: &quot;/home/ubuntu/securitymonkey.sh&quot;},
     &quot;apiKey&quot;: &quot;&lt;api key&gt;&quot;,
-    &quot;cloudProvider&quot;: &quot;amazon&quot;
+    &quot;cloudProvider&quot;: &quot;amazon aws&quot;
 }
 </pre></div>
 </div>
@@ -340,9 +341,14 @@
 <li><strong>token</strong> (<em>string</em>) &#8211; Authentication token</li>
 <li><strong>cloudProvider</strong> (<em>string</em>) &#8211; cloud provider name</li>
 <li><strong>apiKey</strong> (<em>string</em>) &#8211; Provider`s api key</li>
+<li><strong>instanceId</strong> (<em>string</em>) &#8211; Instance id to use for docker deployment(optional)</li>
 <li><strong>secretKey</strong> (<em>string</em>) &#8211; Provider`s secret key</li>
 <li><strong>packageName</strong> (<em>string</em>) &#8211; dockerhub package name</li>
 <li><strong>dockerParams</strong> (<em>array</em>) &#8211; package params for docker to start</li>
+<li><strong>dockerParams.ports</strong> (<em>list</em>) &#8211; list of ports</li>
+<li><strong>dockerParams.tag</strong> (<em>string</em>) &#8211; docker package tag</li>
+<li><strong>dockerParams.cmd</strong> (<em>string</em>) &#8211; docker command to run</li>
+<li><strong>dockerParams.env</strong> (<em>array</em>) &#8211; environment variables to pass to docker.  Some values can be templated using brackets e.g. {host} converts to instance`s public dns</li>
 </ul>
 </td>
 </tr>
