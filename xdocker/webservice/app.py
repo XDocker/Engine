@@ -42,6 +42,9 @@ class User(UserMixin):
     def user(self):
         return self._user or self._load_user()
 
+    def delete(self):
+        mongo.db.users.remove({"username": self.username})
+
     def _load_user(self):
         user = mongo.db.users.find_one({"username": self.username})
         if not user:
@@ -246,6 +249,40 @@ def authenticate():
     token = user.get_auth_token()
     return make_response(token=token)
 
+
+@app.route("/removeUsername", methods=["POST"])
+def remove_user():
+    """Remove user
+
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /removeUsername HTTP/1.1
+        {
+            "token": "<token>"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "Username removed successfully",
+        }
+
+    :jsonparam string token: Authentication token
+    :statuscode 200: no error
+    """
+    current_user.delete()
+    return make_response(message='Username removed successfully')
 
 
 @app.route("/register", methods=["POST"])
