@@ -25,6 +25,8 @@ class AmazonProvider(MixinProvider):
     default_ami = 'ami-2d9add1d'
     default_instance_type = 't1.micro'
 
+    instance_name_tag = 'Name'
+
     def __init__(self, params, **kwargs):
         super(AmazonProvider, self).__init__(params, **kwargs)
         self._connection = None
@@ -53,6 +55,7 @@ class AmazonProvider(MixinProvider):
         self._create_security_group()
 
         ami = self.init_data.get("instanceAmi", self.default_ami)
+        instance_name = self.init_data.get("instanceName")
         instance_type = self.init_data.get("instanceType",
                 self.default_instance_type)
         reservation = self.connection.run_instances(
@@ -62,6 +65,8 @@ class AmazonProvider(MixinProvider):
                 instance_type=instance_type
                 )
         instance = reservation.instances[0]
+        if instance_name:
+            instance.add_tag(self.instance_name_tag, instance_name)
         status = instance.update()
         self.logger.debug("Waiting for instance to start")
         while status == 'pending':
