@@ -39,7 +39,7 @@ class AmazonProvider(MixinProvider):
         params = self.init_data
         access_key = decrypt_key(params['apiKey'])
         secret_key = decrypt_key(params['secretKey'])
-        region = params.get('region', self.default_region)
+        region = params.get('instanceRegion', self.default_region)
         self._connection = boto.ec2.connect_to_region(
             region,
             aws_access_key_id=access_key,

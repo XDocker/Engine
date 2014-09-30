@@ -365,6 +365,9 @@ def run_instance():
     :jsonparam string cloudProvider: cloud provider name
     :jsonparam string apiKey: Provider`s api key
     :jsonparam string instanceId: Instance id to use for docker deployment(optional)
+    :jsonparam string instanceRegion: Region to create instance in (optional)
+    :jsonparam string instanceAmi: Ami to use for amazon instance(optional)
+    :jsonparam string instanceType: Type of the amazon instance (optional)
     :jsonparam string secretKey: Provider`s secret key
     :jsonparam string packageName: dockerhub package name
     :jsonparam array dockerParams: package params for docker to start
