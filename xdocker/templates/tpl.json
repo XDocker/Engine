@@ -1,0 +1,28 @@
+{
+	"id" 				: "1",
+	"name"				: "xDocker Template", 
+	"cloudProvider"		: "Amazon AWS",
+	"apiKey"			: "",
+	"secretKey"			: "",
+	"securityGroup"		: "", //Optional and only for AWS
+	"keyPair"			: "", //Optional and only for AWS
+	"vpcId"				: "", //VPC if present - or default VPC - optional
+	"subnetId"			: "", //Subnet Id for the selected VPC optional
+	"instanceType"		: "", //Dependent on provider
+	"instanceRegion"	: "",  //Dependent on region
+	"instanceId"		: "", //If provided use or use default. supported machine images will be Deb/RPM
+	"action"			: {
+							 "expresion" : "checkOS"
+							 "result"	: {
+							 				"deb" : 'load deb package', // docker library as deb
+							 				"rpm" : 'load rpm package'  // docker library as rpm
+							 			  }
+	
+						  },
+	"dockerImage"		: "", //Docker Image
+	"dockerPorts"		: {5000, 443, 8080, 9090},
+	"host"				: {host},
+	"user_script"		: "special script for each deployment to be run"
+	
+						 
+}
