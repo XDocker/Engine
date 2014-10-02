@@ -275,7 +275,8 @@ def remove_user():
         Vary: Accept-Encoding
 
         {
-            "status": "Username removed successfully",
+            "status": "OK",
+            "message": "Username removed successfully"
         }
 
     :jsonparam string token: Authentication token
