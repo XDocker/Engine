@@ -51,6 +51,56 @@
   <div class="section" id="xdocker-engine-api-methods">
 <h1>XDocker engine api methods<a class="headerlink" href="#xdocker-engine-api-methods" title="Permalink to this headline">¶</a></h1>
 <dl class="post">
+<dt id="post--getStatusOfAllDeployments">
+<tt class="descname">POST </tt><tt class="descname">/getStatusOfAllDeployments</tt><a class="headerlink" href="#post--getStatusOfAllDeployments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get job ids</p>
+<p><strong>Example request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>POST /getStatusOfAllDeployments HTTP/1.1
+{
+    &quot;token&quot;: &quot;&lt;token&gt;&quot;,
+}
+</pre></div>
+</div>
+<p><strong>Example response</strong></p>
+<div class="highlight-http"><div class="highlight"><pre>HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    &quot;status&quot;: &quot;OK&quot;,
+    &quot;jobs&quot;: {
+        &quot;&lt;job_id&gt;&quot;: &quot;&lt;status&gt;&quot;
+        ...
+    }
+}
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>token</strong> (<em>string</em>) &#8211; Authentication token</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; not authorized</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li><strong>jobs</strong> (<em>array</em>) &#8211; Statuses of user`s jobs</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
 <dt id="post--removeUsername">
 <tt class="descname">POST </tt><tt class="descname">/removeUsername</tt><a class="headerlink" href="#post--removeUsername" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove user</p>

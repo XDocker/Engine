@@ -70,6 +70,13 @@ class User(UserMixin):
             return True
         raise InvalidPassword(self)
 
+    def _get_update_dict(self):
+        return {"_id": self.user['_id']}
+
+    def update(self, data):
+        mongo.db.users.update(self._get_update_dict(), {"$set": data})
+        self._load_user()
+
     @classmethod
     def create(cls, username, password, **kwargs):
         data = kwargs
@@ -83,6 +90,15 @@ class User(UserMixin):
         data['password'] = cls.hash_pass(password)
         mongo.db.users.insert(data)
         return cls(username)
+
+    def add_job(self, job_id):
+        mongo.db.users.update(self._get_update_dict(),
+                {"$push": {"jobs": job_id}}
+                )
+
+    @property
+    def jobs(self):
+        return self.user.get('jobs', [])
 
     @classmethod
     def get(cls, username):
@@ -155,6 +171,11 @@ class UserAlreadyExists(UserException):
 class InvalidPassword(UserException):
     message = "Invalid password"
     status_code = 401
+
+
+class PermissionDenied(UserException):
+    message = 'Permission denied'
+    status_code = 403
 
 
 class JobWorkerException(AppException):
@@ -382,10 +403,11 @@ def run_instance():
     :>json string job_id: Deployment job id
     """
     data = check_args(
-            ('cloudProvider', 'apiKey', 'secretKey', 'packageName', 'username')
+            ('cloudProvider', 'apiKey', 'secretKey', 'packageName')
             )
     job = q.enqueue_call(jobs.deploy, args=(data,), timeout=1200,
             result_ttl=86400)
+    current_user.add_job(job.id)
     return make_response(job_id=job.id)
 
 
@@ -478,6 +500,8 @@ def job_status(job_id):
 
     job = q.fetch_job(job_id)
     if job:
+        if not job in current_user.jobs:
+            raise PermissionDenied
         status = job.get_status()
         res_dict['result'] = job.result
     else:
@@ -531,6 +555,49 @@ def get_log(job_id):
     data = check_args(tuple())
     log = get_job_log(data['username'], job_id)
     return make_response(log=log)
+
+
+@app.route("/getStatusOfAllDeployments", methods=["POST"])
+@login_required
+def get_all_deployments():
+    """Get job ids
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /getStatusOfAllDeployments HTTP/1.1
+        {
+            "token": "<token>",
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+        {
+            "status": "OK",
+            "jobs": {
+                "<job_id>": "<status>"
+                ...
+            }
+        }
+
+    :jsonparam string token: Authentication token
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    :>json array jobs: Statuses of user`s jobs
+    """
+    statuses = {}
+    for job_id in current_user.jobs:
+        job = q.fetch_job(job_id)
+        if not job:
+            continue
+        statuses[job_id] = job.get_status()
+    return make_response(jobs=statuses)
 
 
 @app.route("/uploadKey", methods=["POST"])
