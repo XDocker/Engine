@@ -500,7 +500,7 @@ def job_status(job_id):
 
     job = q.fetch_job(job_id)
     if job:
-        if not job in current_user.jobs:
+        if not job.id in current_user.jobs:
             raise PermissionDenied
         status = job.get_status()
         res_dict['result'] = job.result
