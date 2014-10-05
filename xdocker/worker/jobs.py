@@ -13,7 +13,8 @@ from providers import registry
 from config import MAX_INSTALL_RETRY
 from utils import decrypt_key, get_user_directory, get_user_log_directory, \
         get_logger, install_remote_logger
-from worker.exceptions import NoSuchProvider, InstanceDoesNotExist
+from worker.exceptions import NoSuchProvider, InstanceDoesNotExist, \
+        DeployException
 
 
 
@@ -84,16 +85,21 @@ def deploy(data):
         logger.info("Installing package to {}".format(instance))
         # install_docker(data['packageName'], data['dockerParams'])
         i = 0
+        failed = True
         while i < MAX_INSTALL_RETRY:
+            if i > 0:
+                logger.info("Trying install package one more time")
             try:
                 install_docker(data['packageName'], data['dockerParams'])
+                failed = False
                 break
             except Exception, e:
                 logger.error("Error installing {}".format(str(e)))
+                time.sleep(5)
                 i += 1
-
-
-
+    if failed:
+        logger.error("Could not deploy docker package")
+        raise DeployException()
 
     return {"instance_id": instance.instance_id, "public_dns":
             instance.host}

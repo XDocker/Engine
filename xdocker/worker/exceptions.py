@@ -2,6 +2,10 @@ class WorkerException(Exception):
     message = "Worker error"
 
 
+class DeployException(WorkerException):
+    message = "Could not deploy"
+
+
 class NoSuchProvider(WorkerException):
     message = "No such provider exists"
 
