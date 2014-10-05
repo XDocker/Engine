@@ -365,7 +365,11 @@ def run_instance():
             "dockerParams": {"ports": [443, 5000], "env": {}, "tag": "v1",
             "cmd": "/home/ubuntu/securitymonkey.sh"},
             "apiKey": "<api key>",
-            "cloudProvider": "amazon aws"
+            "cloudProvider": "amazon aws",
+            "instanceType": "m3.medium",
+            "instanceRegion": "us-east-1",
+            "instanceImage": "ami-8997afe0",
+            "OS": "CentOS 6.5"
         }
 
     **Example response**
@@ -390,6 +394,7 @@ def run_instance():
     :jsonparam string instanceRegion: Region to create instance in (optional)
     :jsonparam string instanceAmi: Ami to use for amazon instance(optional)
     :jsonparam string instanceType: Type of the amazon instance (optional)
+    :jsonparam string OS: Type of the OS
     :jsonparam string instanceName: Amazon instance tag with key Name (optional)
     :jsonparam string secretKey: Provider`s secret key
     :jsonparam string packageName: dockerhub package name
@@ -403,7 +408,7 @@ def run_instance():
     :>json string job_id: Deployment job id
     """
     data = check_args(
-            ('cloudProvider', 'apiKey', 'secretKey', 'packageName')
+            ('cloudProvider', 'apiKey', 'secretKey', 'packageName', 'OS')
             )
     job = q.enqueue_call(jobs.deploy, args=(data,), timeout=1200,
             result_ttl=86400)
