@@ -368,7 +368,7 @@ def run_instance():
             "cloudProvider": "amazon aws",
             "instanceType": "m3.medium",
             "instanceRegion": "us-east-1",
-            "instanceImage": "ami-8997afe0",
+            "instanceAmi": "ami-8997afe0",
             "OS": "CentOS 6.5"
         }
 
