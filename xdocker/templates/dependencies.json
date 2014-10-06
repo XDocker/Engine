@@ -1,0 +1,21 @@
+{
+ "Amazon Linux" : {
+ 						"yum update -y",
+        				"yum -y install docker"
+ 				  },
+ "CentOS 6" : {
+ 						"rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm",
+        				"yum update -y",
+        				"yum -y install docker-io"
+        				
+ 				  },
+ "Ubuntu" :
+ 			{
+ 				"apt-get update"
+        		"apt-get install -y docker.io"      
+    			"sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker"
+    			
+    		}
+ }
+ 				  
+ 			

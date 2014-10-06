@@ -11,7 +11,7 @@
 	"instanceType"		: "", //Dependent on provider
 	"instanceRegion"	: "",  //Dependent on region
 	"instanceId"		: "", //If provided use or use default. supported machine images will be Deb/RPM
-	"action"			: {
+	"tasks"			: {
 							 "expresion" : "checkOS"
 							 "result"	: {
 							 				"deb" : 'load deb package', // docker library as deb
