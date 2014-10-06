@@ -34,11 +34,21 @@ def instance_action(data):
             instance.instance.state}
 
 
-def install_docker(package_name, params):
+def install_docker(package_name, params, OS):
     install_remote_logger('paramiko')
-    with settings(warn_only=True):
-        sudo('apt-get update')
-    sudo('apt-get install -y docker.io')
+    if OS.find("Amazon Linux") >= 0:
+        with settings(warn_only=True):
+            sudo('yum update -y')
+        sudo('yum -y install docker')
+    elif OS.find("CentOS 6") >= 0:
+        sudo('rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm')
+        with settings(warn_only=True):
+            sudo('yum update -y')
+        sudo('yum -y install docker-io')
+    else:
+        with settings(warn_only=True):
+            sudo('apt-get update')
+        sudo('apt-get install -y docker.io')        
     sudo('sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker')
     # sudo('service docker start')
     port_part = " ".join(["-p {port}:{port}".format(port=port)
@@ -90,7 +100,7 @@ def deploy(data):
             if i > 0:
                 logger.info("Trying install package one more time")
             try:
-                install_docker(data['packageName'], data['dockerParams'])
+                install_docker(data['packageName'], data['dockerParams'], data['OS'])
                 failed = False
                 break
             except Exception, e:
