@@ -41,10 +41,11 @@ def install_docker(package_name, params, OS):
             sudo('yum update -y')
         sudo('yum -y install docker')
     elif OS.find("CentOS 6") >= 0:
-        sudo('rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm')
+        sudo('yum -y install epel-release.noarch')
         with settings(warn_only=True):
             sudo('yum update -y')
         sudo('yum -y install docker-io')
+        sudo('service docker start')
     else:
         with settings(warn_only=True):
             sudo('apt-get update')
