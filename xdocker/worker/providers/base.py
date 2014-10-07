@@ -52,8 +52,9 @@ class MixinProvider(object):
 
     def __init__(self, params, logger=None):
         self.username = params['username']
+        self.region = params['instanceRegion']
         self.user_directory = get_user_directory(self.username)
-        self.keyname = params.get('keyname', self.default_keyname)
+        self.keyname = params.get('keyname', 'xdocker_'+self.default_keyname+'_'+self.username+'_'+self.region)
         self.logger = logger or logging.getLogger(self.username)
         self.init_data = params
 
