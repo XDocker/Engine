@@ -1,0 +1,34 @@
+{
+  "cloudProvider" : "Amazon AWS",
+  "OS" :
+		{
+		 "Amazon Linux" : {
+		 					"username" : "ec2-user",
+		 					"dependencies" : 
+		 					{
+		 						"yum update -y",
+        						"yum -y install docker"
+		 					},
+		 				  },
+		 "CentOS 6" : {
+		 					"username" : "ec2-user",
+		 					"dependencies" : 
+		 					{
+		 						"rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm",
+        						"yum update -y",
+        				"		yum -y install docker-io"
+		 					},
+		        	  },
+		 "Ubuntu" :
+		 			 {
+		 					"username" : "ubuntu",
+		 					"dependencies" : 
+		 					{
+		 						"apt-get update",
+				        		"apt-get install -y docker.io"     , 
+				    			"sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker",
+		 					},
+		        	 },
+		 }
+}
+ 	
