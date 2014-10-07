@@ -3,13 +3,14 @@
 
 import os
 import time
-
+import json
 from fabric.context_managers import settings
 from fabric.api import env, sudo, put
 from rq import get_current_job
 
 from providers import registry
 
+from config import DEPS_FILE
 from config import MAX_INSTALL_RETRY
 from utils import decrypt_key, get_user_directory, get_user_log_directory, \
         get_logger, install_remote_logger
@@ -34,23 +35,13 @@ def instance_action(data):
             instance.instance.state}
 
 
-def install_docker(package_name, params, OS):
+def install_docker(package_name, params, deps):
     install_remote_logger('paramiko')
-    if OS.find("Amazon Linux") >= 0:
-        with settings(warn_only=True):
-            sudo('yum update -y')
-        sudo('yum -y install docker')
-    elif OS.find("CentOS 6") >= 0:
-        sudo('yum -y install epel-release.noarch')
-        with settings(warn_only=True):
-            sudo('yum update -y')
-        sudo('yum -y install docker-io')
-        sudo('service docker start')
-    else:
-        with settings(warn_only=True):
-            sudo('apt-get update')
-        sudo('apt-get install -y docker.io')        
-    sudo('sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker')
+    try:
+        for cmd in deps['dependencies']:
+            sudo(cmd)
+    except:
+        logger.error("Error processing dependencies commands {}")
     # sudo('service docker start')
     port_part = " ".join(["-p {port}:{port}".format(port=port)
         for port in params.get("ports", [])])
@@ -73,21 +64,29 @@ def get_provider_class(provider):
         raise NoSuchProvider()
 
 
-def init_provider(data, not_job=False):
+def init_provider(data, sysuser, not_job=False):
     if not_job:
         logger = None
     else:
         logger = get_logger()
     provider_name = data['cloudProvider']
     Provider = get_provider_class(provider_name)
-    provider = Provider(data, logger=logger)
+    provider = Provider(data, sysuser, logger=logger)
     return provider
 
-
+def init_dependenices(os):
+    try:
+        with open(DEPS_FILE) as data_file:
+            data = json.load(data_file)
+        deps = data['OS'][os]
+    except:
+        logger.error("Error reading dependecies file {}".DEPS_FILE)
+    returnd deps
 
 def deploy(data):
+    deps = init_dependenices( data['OS'])
     logger = get_logger()
-    provider = init_provider(data)
+    provider = init_provider(data, deps['username'])
     if 'instanceId' in data:
         instance = provider.get_instance(data['instanceId'])
     else:
@@ -101,7 +100,7 @@ def deploy(data):
             if i > 0:
                 logger.info("Trying install package one more time")
             try:
-                install_docker(data['packageName'], data['dockerParams'], data['OS'])
+                install_docker(data['packageName'], data['dockerParams'], deps)
                 failed = False
                 break
             except Exception, e:

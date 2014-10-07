@@ -9,6 +9,8 @@ for direc in (DATA_DIRECTORY, USER_DIRECTORY):
     if not os.path.exists(direc):
         os.mkdir(direc)
 
+DEPS_FILE = os.path.join(ROOT_PATH, 'templates')+'os_dependency_username.json'
+
 # Webservice part
 
 DEBUG = True
