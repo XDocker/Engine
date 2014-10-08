@@ -690,6 +690,55 @@ def download_key():
     return make_response(key=key)
 
 
+@app.route("/sourceBillingData", methods=["POST"])
+@login_required
+def sourceBillingData():
+    """SourceBillingData
+
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /sourceBillingData HTTP/1.1
+        {
+            "token": "<token>",
+            "cloudProvider": "amazon aws",
+            "apiKey": "<api key>",
+            "secretKey": "<api secret>",
+            "bucketName": "<Optional billing bucket>"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+            "job_id": "<job id>"
+        }
+
+    :jsonparam string cloudProvider: cloud provider name
+    :jsonparam string apiKey: Provider`s api key
+    :jsonparam string secretKey: Provider`s secret key
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    :>json string job_id: Deployment job id
+    """
+    data = check_args(
+            ('cloudProvider', 'apiKey', 'secretKey')
+            )
+    job = q.enqueue_call(jobs.sourceBillingData, args=(data,), timeout=1200,
+            result_ttl=86400)
+    current_user.add_job(job.id)
+    return make_response(job_id=job.id)
+
+
 if __name__ == '__main__':
     app.run(host=app.config['APP_HOST'], port=app.config['APP_PORT'])
 

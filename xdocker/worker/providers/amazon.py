@@ -79,6 +79,9 @@ class AmazonProvider(MixinProvider):
 
     def get_instance(self, instance_id):
         return AmazonInstance(self, instance_id)
+    
+    def get_s3_buckets(self):
+        return ''
 
     def _create_security_group(self):
         try:

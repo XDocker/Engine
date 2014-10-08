@@ -120,3 +120,15 @@ def deploy(data):
 
     return {"instance_id": instance.instance_id, "public_dns":
             instance.host}
+
+def sourceBillingData(data):
+    logger = get_logger()
+    provider = init_provider(data)
+    # Here if billing bucket is provided - then get the contents csv files
+    # Suggestion : we load the files located based on the date stamp.
+    # This can be loaded to mongo for each user.
+    # Then we summarize this data - monthly, quarterly, half yearly, yearly, group by AWS assets per month, per quarter
+    # - Resource or tag wise and so on.
+    # Note : Then we use https://pypi.python.org/pypi/django-aws-billing/0.2.6 and implement the methods
+    
+    return ''
