@@ -37,11 +37,12 @@ def instance_action(data):
 
 def install_docker(package_name, params, deps):
     install_remote_logger('paramiko')
+    logger = get_logger()
     try:
         for cmd in deps['dependencies']:
             sudo(cmd)
     except:
-        logger.error("Error processing dependencies commands {}")
+        logger.error("Error processing dependencies commands")
     # sudo('service docker start')
     port_part = " ".join(["-p {port}:{port}".format(port=port)
         for port in params.get("ports", [])])
@@ -64,29 +65,34 @@ def get_provider_class(provider):
         raise NoSuchProvider()
 
 
-def init_provider(data, sysuser, not_job=False):
+def init_provider(data, not_job=False):
     if not_job:
         logger = None
     else:
         logger = get_logger()
     provider_name = data['cloudProvider']
     Provider = get_provider_class(provider_name)
-    provider = Provider(data, sysuser, logger=logger)
+    provider = Provider(data, logger=logger)
     return provider
 
 def init_dependenices(os):
+    deps = {}
+    logger = get_logger()
     try:
         with open(DEPS_FILE) as data_file:
             data = json.load(data_file)
+    except:
+        logger.error("Error reading dependecies file "+DEPS_FILE)
+    try:            
         deps = data['OS'][os]
     except:
-        logger.error("Error reading dependecies file {}".DEPS_FILE)
-    returnd deps
+        logger.error("Error: can't find dependencies for OS: "+os)
+    return deps
 
 def deploy(data):
     deps = init_dependenices( data['OS'])
     logger = get_logger()
-    provider = init_provider(data, deps['username'])
+    provider = init_provider(data)
     if 'instanceId' in data:
         instance = provider.get_instance(data['instanceId'])
     else:

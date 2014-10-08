@@ -10,7 +10,7 @@
         						"yum -y install docker"
 		 					]
 		 				  },
-		 "CentOS 6" : {
+		 "CentOS 6.5" : {
 		 					"username" : "root",
 		 					"dependencies" : 
 		 					[
@@ -20,13 +20,14 @@
 							"service docker start"
 		 					]
 		        	  },
-		 "Ubuntu" :
+		 "Ubuntu 14.04" :
 		 			 {
 		 					"username" : "ubuntu",
 		 					"dependencies" : 
 		 					[
+		 					"apt-get update",
 				        		"aptitude -q -y --allow-new-installs --safe-resolve install docker.io"     , 
-				    			"sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker",
+				    			"sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker"
 		 					]
 		        	 }
 		 }
