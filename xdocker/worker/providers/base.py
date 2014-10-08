@@ -50,7 +50,7 @@ class MixinProvider(object):
 
     default_keyname = KEY_NAME
 
-    def __init__(self, sysuser, params, logger=None):
+    def __init__(self, params, logger=None):
         self.username = params['username']
         self.region = params['instanceRegion']
         self.user_directory = get_user_directory(self.username)
