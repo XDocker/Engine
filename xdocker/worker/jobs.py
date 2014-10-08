@@ -106,6 +106,7 @@ def deploy(data):
             if i > 0:
                 logger.info("Trying install package one more time")
             try:
+                time.sleep(100)
                 install_docker(data['packageName'], data['dockerParams'], deps)
                 failed = False
                 break
