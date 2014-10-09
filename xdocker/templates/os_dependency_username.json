@@ -25,9 +25,9 @@
 		 					"username" : "ubuntu",
 		 					"dependencies" : 
 		 					[
-		 					"apt-get update",
-				        		"aptitude -q -y --allow-new-installs --safe-resolve install docker.io"     , 
-				    			"sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker"
+		 					"aptitude -q -y --allow-new-installs --safe-resolve update",
+				        		"aptitude -q -y --allow-new-installs --safe-resolve install docker.io", 
+				    			"ln -sf /usr/bin/docker.io /usr/local/bin/docker"
 		 					]
 		        	 }
 		 }
