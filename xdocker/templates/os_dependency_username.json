@@ -17,6 +17,7 @@
 		 					"yum -y install epel-release.noarch",
         						"yum update -y",
         						"yum -y install docker-io",
+        						"chkconfig docker on",
 							"service docker start"
 		 					]
 		        	  },

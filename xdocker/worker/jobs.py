@@ -35,7 +35,7 @@ def instance_action(data):
             instance.instance.state}
 
 
-def install_docker(package_name, params, deps):
+def install_docker(package_name, params, apiKey, secretKey, billingBucket, deps):
     install_remote_logger('paramiko')
     logger = get_logger()
     try:
@@ -48,6 +48,9 @@ def install_docker(package_name, params, deps):
         for port in params.get("ports", [])])
     env_part = " ".join(["-e {key}={value}".format(key=key, value=value)
         for key, value in params.get("env", {}).items()])
+    env_part = env_part+" -e apiKey="+apiKey
+    env_part = env_part+" -e secretKey="+secretKey
+    env_part = env_part+" -e billingBucket="+billingBucket
     env_part = env_part.format(host=env.host_string)
     run_cmd = "docker run {envs} -d -i -t {ports} {name}:{tag} {cmd}".format(
         envs=env_part, ports=port_part, name=package_name,
@@ -107,7 +110,7 @@ def deploy(data):
                 logger.info("Trying install package one more time")
             try:
                 time.sleep(100)
-                install_docker(data['packageName'], data['dockerParams'], deps)
+                install_docker(data['packageName'], data['dockerParams'], data['apiKey'], data['secretKey'], data['billingBucket'], deps)
                 failed = False
                 break
             except Exception, e:
