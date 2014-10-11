@@ -48,9 +48,9 @@ def install_docker(package_name, params, apiKey, secretKey, billingBucket, deps)
         for port in params.get("ports", [])])
     env_part = " ".join(["-e {key}={value}".format(key=key, value=value)
         for key, value in params.get("env", {}).items()])
-    env_part = env_part+" -e apiKey="+apiKey
-    env_part = env_part+" -e secretKey="+secretKey
-    env_part = env_part+" -e billingBucket="+billingBucket
+    env_part = env_part+" -e AWS_ACCESS_KEY_ID="+apiKey
+    env_part = env_part+" -e AWS_SECRET_ACCESS_KEY="+secretKey
+    env_part = env_part+" -e BILLING_BUCKET="+billingBucket
     env_part = env_part.format(host=env.host_string)
     run_cmd = "docker run {envs} -d -i -t {ports} {name}:{tag} {cmd}".format(
         envs=env_part, ports=port_part, name=package_name,
