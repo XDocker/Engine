@@ -122,7 +122,7 @@ def deploy(data):
         raise DeployException()
 
     return {"instance_id": instance.instance_id, "public_dns":
-            instance.host}
+            instance.host, "state": instance.state}
 
 def sourceBillingData(data):
     logger = get_logger()
