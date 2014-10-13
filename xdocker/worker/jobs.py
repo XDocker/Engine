@@ -78,6 +78,7 @@ def init_provider(data, not_job=False):
     provider = Provider(data, logger=logger)
     return provider
 
+
 def init_dependenices(os):
     deps = {}
     logger = get_logger()
@@ -86,14 +87,15 @@ def init_dependenices(os):
             data = json.load(data_file)
     except:
         logger.error("Error reading dependecies file "+DEPS_FILE)
-    try:            
+    try:
         deps = data['OS'][os]
     except:
         logger.error("Error: can't find dependencies for OS: "+os)
     return deps
 
+
 def deploy(data):
-    deps = init_dependenices( data['OS'])
+    deps = init_dependenices(data['OS'])
     logger = get_logger()
     provider = init_provider(data)
     if 'instanceId' in data:
@@ -124,6 +126,7 @@ def deploy(data):
     return {"instance_id": instance.instance_id, "public_dns":
             instance.host, "state": instance.state}
 
+
 def sourceBillingData(data):
     logger = get_logger()
     provider = init_provider(data)
@@ -133,5 +136,4 @@ def sourceBillingData(data):
     # Then we summarize this data - monthly, quarterly, half yearly, yearly, group by AWS assets per month, per quarter
     # - Resource or tag wise and so on.
     # Note : Then we use https://pypi.python.org/pypi/django-aws-billing/0.2.6 and implement the methods
-    
     return ''

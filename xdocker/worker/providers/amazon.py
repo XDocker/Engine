@@ -1,7 +1,9 @@
 import os.path
 import time
 import zope.interface
+import json
 
+import boto
 import boto.ec2
 
 from base import IProvider, MixinProvider, IInstance, MixinInstance
@@ -30,6 +32,7 @@ class AmazonProvider(MixinProvider):
     def __init__(self, params, **kwargs):
         super(AmazonProvider, self).__init__(params, **kwargs)
         self._connection = None
+        self.iam = None
 
         install_remote_logger('boto')
 
@@ -39,13 +42,13 @@ class AmazonProvider(MixinProvider):
 
     def _connect(self):
         params = self.init_data
-        access_key = decrypt_key(params['apiKey'])
-        secret_key = decrypt_key(params['secretKey'])
-        region = params.get('instanceRegion', self.default_region)
+        self.access_key = decrypt_key(params['apiKey'])
+        self.secret_key = decrypt_key(params['secretKey'])
+        self.region = params.get('instanceRegion', self.default_region)
         self._connection = boto.ec2.connect_to_region(
-            region,
-            aws_access_key_id=access_key,
-            aws_secret_access_key=secret_key
+            self.region,
+            aws_access_key_id=self.access_key,
+            aws_secret_access_key=self.secret_key
             )
         return self._connection
 
@@ -53,6 +56,7 @@ class AmazonProvider(MixinProvider):
         self.logger.debug("Spinning up new instance")
         self._create_key()
         self._create_security_group()
+        self._create_iam_roles()
 
         ami = self.init_data.get("instanceAmi", self.default_ami)
         instance_name = self.init_data.get("instanceName")
@@ -62,6 +66,7 @@ class AmazonProvider(MixinProvider):
                 ami,
                 key_name=self.keyname,
                 security_groups=[SECURITY_GROUP_NAME],
+                instance_profile_name=self.iam,
                 instance_type=instance_type
                 )
         instance = reservation.instances[0]
@@ -79,9 +84,91 @@ class AmazonProvider(MixinProvider):
 
     def get_instance(self, instance_id):
         return AmazonInstance(self, instance_id)
-    
+
     def get_s3_buckets(self):
         return ''
+
+    def _create_iam_roles(self):
+        """Test securitymonkey roles"""
+        # TODO replace me
+        self.logger.info("Adding iam roles")
+        profile_name = "SecurityMonkey"
+        self.iam = profile_name
+        run_role = "SecurityMonkeyInstanceProfile"
+        run_policy_name = "SecurityMonkeyLaunchPerms"
+        run_policy = """{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "*"
+    }
+  ]
+}
+"""
+        sec_role = "SecurityMonkey"
+        sec_policy_name = "SecurityMonkeyReadOnly"
+        sec_policy = """
+        {
+  "Statement": [
+    {
+      "Action": [
+        "cloudwatch:Describe*",
+        "cloudwatch:Get*",
+        "cloudwatch:List*",
+        "ec2:Describe*",
+        "elasticloadbalancing:Describe*",
+        "iam:List*",
+        "iam:Get*",
+        "route53:Get*",
+        "route53:List*",
+        "rds:Describe*",
+        "s3:Get*",
+        "s3:List*",
+        "sdb:GetAttributes",
+        "sdb:List*",
+        "sdb:Select*",
+        "ses:Get*",
+        "ses:List*",
+        "sns:Get*",
+        "sns:List*",
+        "sqs:GetQueueAttributes",
+        "sqs:ListQueues",
+        "sqs:ReceiveMessage"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+"""
+
+        iam = boto.connect_iam(self.access_key, self.secret_key)
+        try:
+            inst_profile = iam.create_instance_profile(profile_name)
+        except iam.ResponseError as err:
+            if err.code == 'EntityAlreadyExists':
+                self.logger.info("Iam role already exists")
+                return
+
+        role = iam.create_role(run_role)
+        assume_policy = {u'Version': u'2008-10-17', u'Statement': [{u'Action':
+            u'sts:AssumeRole', u'Principal': {u'AWS': role.arn}, u'Effect': u'Allow', u'Sid': u''}]}
+        iam.add_role_to_instance_profile(profile_name, run_role)
+        iam.put_role_policy(run_role, run_policy_name, run_policy)
+
+        iam.create_role(sec_role, json.dumps(assume_policy))
+        iam.put_role_policy(sec_role, sec_policy_name, sec_policy)
+
+
 
     def _create_security_group(self):
         try:
