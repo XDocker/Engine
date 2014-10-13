@@ -432,6 +432,7 @@ def instance_action():
             "secretKey": "<api secret>",
             "apiKey": "<api key>",
             "instanceAction": "stop",
+            "instanceId": "i-f7657ffa",
             "cloudProvider": "amazon aws"
         }
 
@@ -452,6 +453,7 @@ def instance_action():
 
     :jsonparam string token: Authentication token
     :jsonparam string cloudProvider: cloud provider name
+    :jsonparam string instanceId: Instance id
     :jsonparam string apiKey: Provider`s api key
     :jsonparam string secretKey: Provider`s secret key
     :jsonparam string instanceAction: Action to perform on instance(start, stop, restart, terminate)
