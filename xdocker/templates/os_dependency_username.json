@@ -28,7 +28,9 @@
 		 					[
 		 					"aptitude -q -y --allow-new-installs --safe-resolve update",
 				        		"aptitude -q -y --allow-new-installs --safe-resolve install docker.io", 
-				    			"ln -sf /usr/bin/docker.io /usr/local/bin/docker"
+				    			"ln -sf /usr/bin/docker.io /usr/local/bin/docker",
+				    			"echo -e 'DOCKER_OPTS=\x22-H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock\x22'>>/etc/default/docker.io",
+				    			"service docker.io restart"
 		 					]
 		        	 }
 		 }
