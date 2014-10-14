@@ -30,14 +30,23 @@ class AmazonProvider(MixinProvider):
     instance_name_tag = 'Name'
 
     def __init__(self, params, **kwargs):
+        self.region = params.get('instanceRegion', self.default_region)
+
         super(AmazonProvider, self).__init__(params, **kwargs)
+
         self._connection = None
         self.access_key = decrypt_key(params['apiKey'])
         self.secret_key = decrypt_key(params['secretKey'])
-        self.region = params.get('instanceRegion', self.default_region)
         self.iam = None
 
         install_remote_logger('boto')
+
+    def _make_keyname(self):
+        default_keyname = super(AmazonProvider, self)._make_keyname()
+        if 'keyname' in self.init_data:
+            return default_keyname
+        else:
+            return '{}_{}'.format(default_keyname, self.region)
 
     @property
     def connection(self):
