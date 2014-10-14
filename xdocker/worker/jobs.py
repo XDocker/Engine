@@ -41,8 +41,9 @@ def install_docker(package_name, params, apiKey, secretKey, billingBucket, deps)
     try:
         for cmd in deps['dependencies']:
             sudo(cmd)
-    except:
+    except Exception as e:
         logger.error("Error processing dependencies commands")
+        raise DeployException()
     # sudo('service docker start')
     port_part = " ".join(["-p {port}:{port}".format(port=port)
         for port in params.get("ports", [])])
@@ -85,12 +86,12 @@ def init_dependenices(os):
     try:
         with open(DEPS_FILE) as data_file:
             data = json.load(data_file)
-    except:
-        logger.error("Error reading dependecies file "+DEPS_FILE)
+    except StandardError:
+        logger.error("Error reading dependecies file {}".format(DEPS_FILE))
     try:
         deps = data['OS'][os]
-    except:
-        logger.error("Error: can't find dependencies for OS: "+os)
+    except KeyError:
+        logger.error("Error: can't find dependencies for OS: {}".format(os))
     return deps
 
 
@@ -104,7 +105,6 @@ def deploy(data):
         instance = provider.create_instance()
     with instance.ssh():
         logger.info("Installing package to {}".format(instance))
-        # install_docker(data['packageName'], data['dockerParams'])
         i = 0
         failed = True
         while i < MAX_INSTALL_RETRY:
