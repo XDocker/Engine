@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import os
+import re
 import time
 import json
 from fabric.context_managers import settings
@@ -35,7 +36,9 @@ def instance_action(data):
             instance.instance.state}
 
 
-def install_docker(package_name, params, apiKey, secretKey, billingBucket, deps):
+braced_param = re.compile("{(\w+)}")
+
+def install_docker(package_name, params, instance, deps):
     install_remote_logger('paramiko')
     logger = get_logger()
     try:
@@ -47,11 +50,20 @@ def install_docker(package_name, params, apiKey, secretKey, billingBucket, deps)
     # sudo('service docker start')
     port_part = " ".join(["-p {port}:{port}".format(port=port)
         for port in params.get("ports", [])])
-    env_part = " ".join(["-e {key}={value}".format(key=key, value=value)
-        for key, value in params.get("env", {}).items()])
-    env_part = env_part+" -e AWS_ACCESS_KEY_ID="+apiKey
-    env_part = env_part+" -e AWS_SECRET_ACCESS_KEY="+secretKey
-    env_part = env_part+" -e BILLING_BUCKET="+billingBucket
+
+    env_part = ""
+    instance_envs = instance.get_envs()
+    for key, value in params.get("env", {}).items():
+        param_var = braced_param.search(value)
+        if param_var:
+            var_name = param_var.group(1)
+            if not var_name in instance_envs:
+                logger.warning("{} has no {} env param".format(instance,
+                    var_name))
+                continue
+            else:
+                value = instance_envs[var_name]
+        env_part += "-e {key}={value}".format(key=key, value=value)
     env_part = env_part.format(host=env.host_string)
     run_cmd = "docker run {envs} -d -i -t {ports} {name}:{tag} {cmd}".format(
         envs=env_part, ports=port_part, name=package_name,
@@ -112,7 +124,8 @@ def deploy(data):
             if i > 0:
                 logger.info("Trying install package one more time")
             try:
-                install_docker(data['packageName'], data['dockerParams'], data['apiKey'], data['secretKey'], data['billingBucket'], deps)
+                install_docker(data['packageName'], data['dockerParams'],
+                        instance, deps)
                 failed = False
                 break
             except Exception, e:

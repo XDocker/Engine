@@ -32,6 +32,9 @@ class AmazonProvider(MixinProvider):
     def __init__(self, params, **kwargs):
         super(AmazonProvider, self).__init__(params, **kwargs)
         self._connection = None
+        self.access_key = decrypt_key(params['apiKey'])
+        self.secret_key = decrypt_key(params['secretKey'])
+        self.region = params.get('instanceRegion', self.default_region)
         self.iam = None
 
         install_remote_logger('boto')
@@ -42,9 +45,6 @@ class AmazonProvider(MixinProvider):
 
     def _connect(self):
         params = self.init_data
-        self.access_key = decrypt_key(params['apiKey'])
-        self.secret_key = decrypt_key(params['secretKey'])
-        self.region = params.get('instanceRegion', self.default_region)
         self._connection = boto.ec2.connect_to_region(
             self.region,
             aws_access_key_id=self.access_key,
@@ -236,9 +236,19 @@ class AmazonInstance(MixinInstance):
         except IndexError:
             raise InstanceDoesNotExist(self)
 
+    def get_envs(self):
+        return {
+                "host": self.host,
+                "AWS_ACCESS_KEY_ID": self.provider.access_key,
+                "AWS_SECRET_ACCESS_KEY": self.provider.secret_key
+                }
     @property
     def host(self):
         return self.instance.public_dns_name
+
+    @property
+    def state(self):
+        return self.instance.state
 
     @property
     def user(self):
