@@ -46,7 +46,6 @@ def install_docker(package_name, params, instance, deps):
             sudo(cmd)
     except Exception as e:
         logger.error("Error processing dependencies commands")
-        raise DeployException()
     # sudo('service docker start')
     port_part = " ".join(["-p {port}:{port}".format(port=port)
         for port in params.get("ports", [])])
@@ -100,10 +99,12 @@ def init_dependenices(os):
             data = json.load(data_file)
     except StandardError:
         logger.error("Error reading dependecies file {}".format(DEPS_FILE))
+        return
     try:
         deps = data['OS'][os]
     except KeyError:
         logger.error("Error: can't find dependencies for OS: {}".format(os))
+        return
     return deps
 
 
