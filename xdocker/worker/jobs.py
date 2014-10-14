@@ -107,11 +107,11 @@ def deploy(data):
         logger.info("Installing package to {}".format(instance))
         i = 0
         failed = True
+        time.sleep(20)
         while i < MAX_INSTALL_RETRY:
             if i > 0:
                 logger.info("Trying install package one more time")
             try:
-                time.sleep(100)
                 install_docker(data['packageName'], data['dockerParams'], data['apiKey'], data['secretKey'], data['billingBucket'], deps)
                 failed = False
                 break
