@@ -369,6 +369,14 @@ def run_instance():
             "instanceType": "m3.medium",
             "instanceRegion": "us-east-1",
             "instanceAmi": "ami-8997afe0",
+            "amazonIAM": [
+              {
+                  "ruleName": "SecurityMonkeyInstanceProfile",
+                  "policyName": "SecurityMonkeyLaunchPerms",
+                  "instanceProfile": "SecurityMonkey",
+                  "policy": "<json policy>"
+              }
+            ]
             "OS": "CentOS 6.5"
         }
 
@@ -396,6 +404,17 @@ def run_instance():
     :jsonparam string instanceType: Type of the amazon instance (optional)
     :jsonparam string OS: Type of the OS
     :jsonparam string instanceName: Amazon instance tag with key Name (optional)
+    :jsonparam list amazonIAM: list of Amazon IAM rules \
+            order of rules is important in some cases
+    :jsonparam array amazonIAM.rule: array iam rule
+    :jsonparam string amazomIAM.rule.ruleName: name of the rule
+    :jsonparam string amazomIAM.rule.policyName: name of the policy
+    :jsonparam string amazomIAM.rule.policy: rule policy
+    :jsonparam string amazomIAM.rule.instanceProfile: name of profile. \
+            The instance starts with this rule(optional)
+    :jsonparam string amazomIAM.rule.assumePolicy: assume policy \
+            for the rule(optional). It accepts braced rule name \
+            e.g. {SecMonkey} that will be replaced with rule's arn
     :jsonparam string secretKey: Provider`s secret key
     :jsonparam string packageName: dockerhub package name
     :jsonparam array dockerParams: package params for docker to start

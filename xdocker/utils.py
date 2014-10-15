@@ -1,4 +1,5 @@
 import os
+import re
 import logging
 
 from config import USER_DIRECTORY, LOG_DIRECTORY_NAME
@@ -14,6 +15,9 @@ def decrypt_key(key):
 
 def encrypt_key(key):
     return key
+
+
+braced_param = re.compile("{(\w+)}")
 
 
 def get_user_directory(username):
