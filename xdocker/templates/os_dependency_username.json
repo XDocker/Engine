@@ -26,11 +26,10 @@
 		 					"username" : "ubuntu",
 		 					"dependencies" : 
 		 					[
-		 					"aptitude -q -y --allow-new-installs --safe-resolver update",
-				        		"aptitude -q -y --allow-new-installs --safe-resolver -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" install docker.io", 
+		 					"aptitude -q -y --allow-new-installs --safe-resolver update && aptitude -q -y --allow-new-installs --safe-resolver -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" install docker.io", 
 				    			"ln -sf /usr/bin/docker.io /usr/local/bin/docker",
 				    			"echo -e 'DOCKER_OPTS=\"-H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock\"'>>/etc/default/docker.io",
-				    			"service docker.io restart"
+				    			"service docker.io restart; sleep 20"
 		 					]
 		        	 }
 		 }
