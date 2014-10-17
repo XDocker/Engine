@@ -218,7 +218,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'xdocker', u'XDocker Documentation',
-     [u'Artemiy Rodionov'], 1)
+     [u'http://www.xdocker.io'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -232,7 +232,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'XDocker', u'XDocker Documentation',
-   u'Artemiy Rodionov', 'XDocker', 'One line description of project.',
+   u'http://www.xdocker.io', 'XDocker', 'Container Orchestration',
    'Miscellaneous'),
 ]
 
