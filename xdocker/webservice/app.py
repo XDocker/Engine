@@ -2,6 +2,9 @@
 import os
 import md5
 
+import logging
+import logging.handlers
+
 from flask import Flask, jsonify, request
 from flask.ext.login import LoginManager, UserMixin, current_user, \
         login_required
@@ -20,6 +23,10 @@ from utils import encrypt_key, decrypt_key, get_job_log
 
 app = Flask(__name__)
 app.config.from_object('config')
+
+log_handler = logging.StreamHandler()
+log_handler.setLevel(logging.INFO)
+app.logger.addHandler(log_handler)
 
 mongo = PyMongo(app)
 
