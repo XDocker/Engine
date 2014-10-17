@@ -43,6 +43,13 @@ class AmazonProvider(MixinProvider):
 
         install_remote_logger('boto')
 
+    def _make_security_group_name(self):
+        default_security_group_name = super(AmazonProvider, self)._make_security_group_name()
+        if 'security_group_name' in self.init_data:
+            return default_security_group_name
+        else:
+            return '{}_{}'.format(default_security_group_name, self.region)
+
     def _make_keyname(self):
         default_keyname = super(AmazonProvider, self)._make_keyname()
         if 'keyname' in self.init_data:
@@ -75,7 +82,7 @@ class AmazonProvider(MixinProvider):
         reservation = self.connection.run_instances(
                 ami,
                 key_name=self.keyname,
-                security_groups=[SECURITY_GROUP_NAME],
+                security_groups=[self.security_group_name],
                 instance_profile_name=self.iam,
                 instance_type=instance_type
                 )
@@ -154,14 +161,14 @@ class AmazonProvider(MixinProvider):
 
     def _create_security_group(self):
         try:
-            group = self.connection.get_all_security_groups(groupnames=[SECURITY_GROUP_NAME])[0]
+            group = self.connection.get_all_security_groups(groupnames=[self.security_group_name])[0]
         except self.connection.ResponseError, e:
             if e.code == 'InvalidGroup.NotFound':
                 # create new group
                 self.logger.info("Create new amazon security group {}".format(
                     SECURITY_GROUP_NAME))
-                group = self.connection.create_security_group(SECURITY_GROUP_NAME,
-                        "Xervmon security group")
+                group = self.connection.create_security_group(self.security_group_name,
+                        "Xdocker security group")
             else:
                 self.logger.error(
                     "Could not create the security group {}".format(e.code)
