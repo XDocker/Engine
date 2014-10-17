@@ -65,7 +65,10 @@ def get_logger(username=None):
 
 
 def install_remote_logger(name):
-    logger = get_logger()
+    try:
+        logger = get_logger()
+    except Exception as e:
+        return
     handler = logger.handlers[0]
     remote_logger = logging.getLogger(name)
     remote_logger.addHandler(handler)
