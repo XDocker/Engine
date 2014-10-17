@@ -68,9 +68,8 @@ def install_docker(package_name, params, instance, deps):
     run_cmd = "docker run {envs} -d -i -t {ports} {name}:{tag} {cmd}".format(
         envs=env_part, ports=port_part, name=package_name,
         tag=params.get("tag", ""), cmd=params.get('cmd', ''))
-    with settings(warn_only=True):
-        sudo('docker pull {package_name}'.format(package_name=package_name))
-        sudo(run_cmd)
+    sudo('docker pull {package_name}'.format(package_name=package_name))
+    sudo(run_cmd)
 
 
 def get_provider_class(provider):

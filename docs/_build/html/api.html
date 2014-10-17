@@ -470,6 +470,14 @@ Content-Type: application/json
     &quot;instanceType&quot;: &quot;m3.medium&quot;,
     &quot;instanceRegion&quot;: &quot;us-east-1&quot;,
     &quot;instanceAmi&quot;: &quot;ami-8997afe0&quot;,
+    &quot;amazonIAM&quot;: [
+      {
+          &quot;ruleName&quot;: &quot;SecurityMonkeyInstanceProfile&quot;,
+          &quot;policyName&quot;: &quot;SecurityMonkeyLaunchPerms&quot;,
+          &quot;instanceProfile&quot;: &quot;SecurityMonkey&quot;,
+          &quot;policy&quot;: &quot;&lt;json policy&gt;&quot;
+      }
+    ]
     &quot;OS&quot;: &quot;CentOS 6.5&quot;
 }
 </pre></div>
@@ -502,6 +510,13 @@ Content-Type: application/json
 <li><strong>instanceType</strong> (<em>string</em>) &#8211; Type of the amazon instance (optional)</li>
 <li><strong>OS</strong> (<em>string</em>) &#8211; Type of the OS</li>
 <li><strong>instanceName</strong> (<em>string</em>) &#8211; Amazon instance tag with key Name (optional)</li>
+<li><strong>amazonIAM</strong> (<em>list</em>) &#8211; list of Amazon IAM rules             order of rules is important in some cases</li>
+<li><strong>amazonIAM.rule</strong> (<em>array</em>) &#8211; array iam rule</li>
+<li><strong>amazomIAM.rule.ruleName</strong> (<em>string</em>) &#8211; name of the rule</li>
+<li><strong>amazomIAM.rule.policyName</strong> (<em>string</em>) &#8211; name of the policy</li>
+<li><strong>amazomIAM.rule.policy</strong> (<em>string</em>) &#8211; rule policy</li>
+<li><strong>amazomIAM.rule.instanceProfile</strong> (<em>string</em>) &#8211; name of profile.             The instance starts with this rule(optional)</li>
+<li><strong>amazomIAM.rule.assumePolicy</strong> (<em>string</em>) &#8211; assume policy             for the rule(optional). It accepts braced rule name             e.g. {SecMonkey} that will be replaced with rule&#8217;s arn</li>
 <li><strong>secretKey</strong> (<em>string</em>) &#8211; Provider`s secret key</li>
 <li><strong>packageName</strong> (<em>string</em>) &#8211; dockerhub package name</li>
 <li><strong>dockerParams</strong> (<em>array</em>) &#8211; package params for docker to start</li>

@@ -10,9 +10,11 @@ from base import IProvider, MixinProvider, IInstance, MixinInstance
 
 import logging
 
-from utils import decrypt_key, get_user_directory, install_remote_logger
+from utils import decrypt_key, get_user_directory, install_remote_logger, \
+        braced_param
 
-from worker.exceptions import InstanceDoesNotExist, InstanceException
+from worker.exceptions import InstanceDoesNotExist, InstanceException, \
+        DeployException
 from config import USER_DIRECTORY, SSH_PORT, HTTPS_PORT, HTTP_PORT, \
         SECURITY_GROUP_NAME
 
@@ -53,7 +55,6 @@ class AmazonProvider(MixinProvider):
         return self._connection or self._connect()
 
     def _connect(self):
-        params = self.init_data
         self._connection = boto.ec2.connect_to_region(
             self.region,
             aws_access_key_id=self.access_key,
@@ -99,85 +100,57 @@ class AmazonProvider(MixinProvider):
 
     def _create_iam_roles(self):
         """Test securitymonkey roles"""
-        # TODO replace me
+        if not 'amazonIAM' in self.init_data:
+            return
+        rules = self.init_data['amazonIAM']
         self.logger.info("Adding iam roles")
-        profile_name = "SecurityMonkey"
-        self.iam = profile_name
-        run_role = "SecurityMonkeyInstanceProfile"
-        run_policy_name = "SecurityMonkeyLaunchPerms"
-        run_policy = """{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ses:SendEmail"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "sts:AssumeRole",
-      "Resource": "*"
-    }
-  ]
-}
-"""
-        sec_role = "SecurityMonkey"
-        sec_policy_name = "SecurityMonkeyReadOnly"
-        sec_policy = """
-        {
-  "Statement": [
-    {
-      "Action": [
-        "cloudwatch:Describe*",
-        "cloudwatch:Get*",
-        "cloudwatch:List*",
-        "ec2:Describe*",
-        "elasticloadbalancing:Describe*",
-        "iam:List*",
-        "iam:Get*",
-        "route53:Get*",
-        "route53:List*",
-        "rds:Describe*",
-        "s3:Get*",
-        "s3:List*",
-        "sdb:GetAttributes",
-        "sdb:List*",
-        "sdb:Select*",
-        "ses:Get*",
-        "ses:List*",
-        "sns:Get*",
-        "sns:List*",
-        "sqs:GetQueueAttributes",
-        "sqs:ListQueues",
-        "sqs:ReceiveMessage"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    }
-  ]
-}
-"""
-
         iam = boto.connect_iam(self.access_key, self.secret_key)
-        try:
-            inst_profile = iam.create_instance_profile(profile_name)
-        except iam.ResponseError as err:
-            if err.code == 'EntityAlreadyExists':
-                self.logger.info("Iam role already exists")
-                return
+        profile_name = None
+        added_rules = {}
+        for rule in rules:
+            assume_policy = rule.get('assumePolicy')
+            instance_profile = rule.get('instanceProfile')
+            rule_name = rule['ruleName']
+            if assume_policy:
+                var_param = braced_param.search(assume_policy)
+                if var_param:
+                    assumed_rule = var_param.group(1)
+                    if not assumed_rule in added_rules:
+                        self.logger.error(
+                                "No such rule {} from assume policy".format(
+                                    assumed_rule))
+                        raise DeployException()
+                    rule_arn = added_rules[assumed_rule]
+                    assume_policy = assume_policy.replace(var_param.group(0),
+                            rule_arn)
+                    assume_policy = json.dumps(json.loads(assume_policy))
+            try:
+                role = iam.create_role(rule_name, assume_policy)
+            except iam.ResponseError as err:
+                if err.code == 'EntityAlreadyExists':
+                    role = iam.get_role(rule_name)
+                else:
+                    raise
+            else:
+                iam.put_role_policy(rule_name, rule['policyName'],
+                    rule['policy'])
+            added_rules[rule_name] = role.arn
+            if instance_profile:
+                try:
+                    inst_profile = iam.create_instance_profile(instance_profile)
+                except iam.ResponseError as err:
+                    if err.code == 'EntityAlreadyExists':
+                        pass
+                    else:
+                        raise
+                profile_name = instance_profile
+                try:
+                    iam.add_role_to_instance_profile(instance_profile,
+                            rule_name)
+                except iam.ResponseError as err:
+                    pass
 
-        role = iam.create_role(run_role)
-        assume_policy = {u'Version': u'2008-10-17', u'Statement': [{u'Action':
-            u'sts:AssumeRole', u'Principal': {u'AWS': role.arn}, u'Effect': u'Allow', u'Sid': u''}]}
-        iam.add_role_to_instance_profile(profile_name, run_role)
-        iam.put_role_policy(run_role, run_policy_name, run_policy)
-
-        iam.create_role(sec_role, json.dumps(assume_policy))
-        iam.put_role_policy(sec_role, sec_policy_name, sec_policy)
-
-
+        self.iam = profile_name
 
     def _create_security_group(self):
         try:
