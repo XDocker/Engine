@@ -21,12 +21,21 @@ from worker.exceptions import WorkerException
 from utils import encrypt_key, decrypt_key, get_job_log
 
 
+root_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)
+log_dir = os.path.join(root_path, 'logs')
+if not os.path.exists(log_dir):
+    os.mkdir(log_dir)
 app = Flask(__name__)
 app.config.from_object('config')
+app.debug = False
 
 log_handler = logging.StreamHandler()
 log_handler.setLevel(logging.INFO)
+file_handler = logging.handlers.RotatingFileHandler(os.path.join(log_dir,
+                'webs.log'))
+file_handler.setLevel(logging.DEBUG)
 app.logger.addHandler(log_handler)
+app.logger.addHandler(file_handler)
 
 mongo = PyMongo(app)
 
