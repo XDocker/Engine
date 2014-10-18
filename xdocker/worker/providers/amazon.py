@@ -37,8 +37,8 @@ class AmazonProvider(MixinProvider):
         super(AmazonProvider, self).__init__(params, **kwargs)
 
         self._connection = None
-        self.access_key = decrypt_key(params['apiKey'])
-        self.secret_key = decrypt_key(params['secretKey'])
+        self.access_key = decrypt_key(params.get('apiKey'))
+        self.secret_key = decrypt_key(params.get('secretKey'))
         self.iam = None
 
         install_remote_logger('boto')
