@@ -45,15 +45,15 @@ class AmazonProvider(MixinProvider):
 
     def _make_security_group_name(self):
         default_security_group_name = super(AmazonProvider, self)._make_security_group_name()
-        if 'security_group_name' in self.init_data:
-            return default_security_group_name
+        if 'instanceSecurityGroup' in self.init_data:
+            return self.init_data['instanceSecurityGroup']
         else:
             return '{}_{}'.format(default_security_group_name, self.region)
 
     def _make_keyname(self):
         default_keyname = super(AmazonProvider, self)._make_keyname()
         if 'keyname' in self.init_data:
-            return default_keyname
+            return self.init_data['keyname']
         else:
             return '{}_{}'.format(default_keyname, self.region)
 

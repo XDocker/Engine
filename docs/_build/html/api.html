@@ -271,7 +271,8 @@ Content-Type: application/json
 
 <span class="p">{</span>
     <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;key&gt;&quot;</span>
+    <span class="nt">&quot;keyName&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;key&gt;&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;key data&gt;&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -508,6 +509,7 @@ Content-Type: application/json
 <li><strong>instanceRegion</strong> (<em>string</em>) &#8211; Region to create instance in (optional)</li>
 <li><strong>instanceAmi</strong> (<em>string</em>) &#8211; Ami to use for amazon instance(optional)</li>
 <li><strong>instanceType</strong> (<em>string</em>) &#8211; Type of the amazon instance (optional)</li>
+<li><strong>instanceSecurityGroup</strong> (<em>string</em>) &#8211; Name of amazon security group to use (optional)</li>
 <li><strong>OS</strong> (<em>string</em>) &#8211; Type of the OS</li>
 <li><strong>instanceName</strong> (<em>string</em>) &#8211; Amazon instance tag with key Name (optional)</li>
 <li><strong>amazonIAM</strong> (<em>list</em>) &#8211; list of Amazon IAM rules             order of rules is important in some cases</li>

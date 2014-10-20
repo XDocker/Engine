@@ -418,6 +418,7 @@ def run_instance():
     :jsonparam string instanceRegion: Region to create instance in (optional)
     :jsonparam string instanceAmi: Ami to use for amazon instance(optional)
     :jsonparam string instanceType: Type of the amazon instance (optional)
+    :jsonparam string instanceSecurityGroup: Name of amazon security group to use (optional)
     :jsonparam string OS: Type of the OS
     :jsonparam string instanceName: Amazon instance tag with key Name (optional)
     :jsonparam list amazonIAM: list of Amazon IAM rules \
