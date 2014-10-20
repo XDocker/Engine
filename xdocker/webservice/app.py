@@ -713,7 +713,8 @@ def download_key():
 
         {
             "status": "OK",
-            "key": "<key>"
+            "keyName": "<key>",
+            "key": "<key data>"
         }
 
     :jsonparam string token: Authentication token
@@ -724,7 +725,7 @@ def download_key():
     data = check_args(('cloudProvider', ))
     provider = jobs.init_provider(data, True)
     key = encrypt_key(provider.get_key())
-    return make_response(key=key)
+    return make_response(keyName=provider.keyname, key=key)
 
 
 @app.route("/sourceBillingData", methods=["POST"])
