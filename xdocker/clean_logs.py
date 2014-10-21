@@ -14,7 +14,7 @@ def clean_log(filepath):
     with open(filepath) as fp:
         line = fp.readline()
         try:
-            date_str = ' '.join(line.split()[:1])
+            date_str = ' '.join(line.split()[:2])
             log_start = datetime.datetime.strptime(date_str,
                     '%Y-%m-%d %H:%M:%S,%f')
         except StandardError:
