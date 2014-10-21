@@ -45,7 +45,7 @@ def install_docker(package_name, params, instance, deps):
         for cmd in deps['dependencies']:
             sudo(cmd)
     except Exception as e:
-        logger.error("Error processing dependencies commands")
+        logger.exception("Error processing dependencies commands")
         raise DeployException()
     # sudo('service docker start')
     port_part = " ".join(["-p {port}:{port}".format(port=port)
