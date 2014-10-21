@@ -21,7 +21,7 @@ def clean_log(filepath):
             delete = True
         else:
             log_age = NOW - log_start
-            if log_age.hours >= STORE_LOGS:
+            if log_age.days >= STORE_LOGS:
                 delete = True
     if delete:
         print "Deleting {}".format(filepath)

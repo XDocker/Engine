@@ -29,7 +29,7 @@ SECURITY_GROUP_NAME = 'xervmon'
 KEY_NAME = 'xervmon'
 KEY_EXTENSION = '.pem'
 
-STORE_LOGS = 50 # hours
+STORE_LOGS = 2 # in days
 
 MAX_INSTALL_RETRY = 3
 
