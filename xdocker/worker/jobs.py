@@ -129,7 +129,7 @@ def deploy(data):
                         instance, deps)
                 failed = False
                 break
-            except Exception, e:
+            except (SystemExit, Exception) as e:
                 logger.error("Error installing {}".format(str(e)))
                 time.sleep(5)
                 i += 1
