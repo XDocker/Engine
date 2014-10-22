@@ -81,6 +81,7 @@ def get_logger(username=None):
     user_directory = get_user_directory(username)
     logger = logging.getLogger(username)
     logger.setLevel(logging.DEBUG)
+    job = get_current_job()
     if not logger.handlers or not LOGGER_HANDLER_NAME in map(lambda l:l.name,
             logger.handlers):
         log_directory = get_user_log_directory(username)
