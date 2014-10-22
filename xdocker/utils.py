@@ -2,19 +2,42 @@ import os
 import re
 import logging
 
-from config import USER_DIRECTORY, LOG_DIRECTORY_NAME
+from Crypto.Cipher import AES
+import base64
+import md5
+
+from config import USER_DIRECTORY, LOG_DIRECTORY_NAME, ENCRYPTION_KEY
 from rq import get_current_job
+
 
 
 LOGGER_HANDLER_NAME = "xdocker"
 
+def init_encryptor(username):
+    username = get_username(username)
+    AES.key_size = 128
+    iv = ENCRYPTION_KEY
+    key = md5.md5(username).hexdigest()
+    encr_obj = AES.new(key=key, IV=iv, mode=AES.MODE_CBC)
+    return encr_obj
 
-def decrypt_key(key):
-    return key
+
+def pad_string(string):
+    return string + b'\0' * (AES.block_size - len(string) % AES.block_size)
 
 
-def encrypt_key(key):
-    return key
+def decrypt_key(key, username=None):
+    encryptor = init_encryptor(username)
+    key = base64.b64decode(key)
+    key = encryptor.decrypt(key)
+    return key.strip().strip('\0')
+
+
+def encrypt_key(key, username=None):
+    encryptor = init_encryptor(username)
+    padded_key = pad_string(key)
+    encrypted_key = encryptor.encrypt(padded_key)
+    return base64.b64encode(encrypted_key)
 
 
 braced_param = re.compile("{(\w+)}")
@@ -46,10 +69,15 @@ def get_job_log(username, job_id, line_num=10):
         return tail(fp, line_num)
 
 
+def get_username(username):
+    if username:
+        return username
+    job = get_current_job()
+    return job.args[0]['username']
+
+
 def get_logger(username=None):
-    if username is None:
-        job = get_current_job()
-        username = job.args[0]['username']
+    username = get_username(username)
     user_directory = get_user_directory(username)
     logger = logging.getLogger(username)
     logger.setLevel(logging.DEBUG)

@@ -7,3 +7,4 @@ fabric
 zope.interface
 pymongo
 Flask-PyMongo
+PyCrypto
