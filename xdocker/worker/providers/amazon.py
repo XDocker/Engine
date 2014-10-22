@@ -16,7 +16,7 @@ from utils import decrypt_key, get_user_directory, install_remote_logger, \
 from worker.exceptions import InstanceDoesNotExist, InstanceException, \
         DeployException
 from config import USER_DIRECTORY, SSH_PORT, HTTPS_PORT, HTTP_PORT, \
-        SECURITY_GROUP_NAME
+        DOCKER_PORT, SECURITY_GROUP_NAME
 
 
 class AmazonProvider(MixinProvider):
@@ -33,6 +33,7 @@ class AmazonProvider(MixinProvider):
 
     def __init__(self, params, **kwargs):
         self.region = params.get('instanceRegion', self.default_region)
+        self.cidrUI = params.get('ipUI')+'/32'
 
         super(AmazonProvider, self).__init__(params, **kwargs)
 
@@ -166,13 +167,24 @@ class AmazonProvider(MixinProvider):
             if e.code == 'InvalidGroup.NotFound':
                 # create new group
                 self.logger.info("Create new amazon security group {}".format(
-                    SECURITY_GROUP_NAME))
+                    self.security_group_name))
                 group = self.connection.create_security_group(self.security_group_name,
                         "Xdocker security group")
             else:
                 self.logger.error(
                     "Could not create the security group {}".format(e.code)
                     )
+                raise
+
+        try:
+            group.authorize('tcp', DOCKER_PORT, DOCKER_PORT, self.cidrUI)
+            self.logger.debug("Authorize port {} inside group".format(DOCKER_PORT))
+        except self.connection.ResponseError, e:
+            if e.code == 'InvalidPermission.Duplicate':
+                # Already exists
+                pass
+            else:
+                self.logger.error("Could not authorize the port for security group {}".format(e.code))
                 raise
 
         for port in (SSH_PORT, HTTP_PORT, HTTPS_PORT):
