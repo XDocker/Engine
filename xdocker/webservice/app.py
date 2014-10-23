@@ -777,6 +777,58 @@ def sourceBillingData():
     return make_response(job_id=job.id)
 
 
+@app.route("/create_billing", methods=["POST"])
+@login_required
+def create_billing():
+    """Create billing account to sync aws billing data
+    **Example request**
+
+    .. sourcecode:: http
+
+        POST /create_billing HTTP/1.1
+        {
+            "token": "<token>",
+            "apiKey": "<api key>",
+            "secretKey": "<api secret>",
+            "bucketName": "<billing bucket>"
+            "accountId": "<aws account id>"
+        }
+
+    **Example response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Encoding: gzip
+        Content-Type: application/json
+        Server: nginx/1.1.19
+        Vary: Accept-Encoding
+
+        {
+            "status": "OK",
+            "job_id": "<job id>"
+        }
+
+    :jsonparam string cloudProvider: cloud provider name
+    :jsonparam string apiKey: Provider`s api key
+    :jsonparam string secretKey: Provider`s secret key
+    :jsonparam string accountId: User`s account in aws
+    :jsonparam string billingBucket: S3 bucket with billing data
+    :statuscode 200: no error
+    :statuscode 401: not authorized
+    :>json string job_id: Deployment job id
+    """
+    data = check_args(
+            ('apiKey', 'secretKey', 'accountId', 'billingBucket')
+            )
+    job = q.enqueue_call(billing.create_billing_user, args=(
+        data['username'], data['apiKey'], data['secretKey'], data['accountId'],
+        data['billingBucket']
+        ), timeout=1200, result_ttl=86400)
+    current_user.add_job(job.id)
+    return make_response(job_id=job.id)
+
+
 if __name__ == '__main__':
     app.run(host=app.config['APP_HOST'], port=app.config['APP_PORT'])
 

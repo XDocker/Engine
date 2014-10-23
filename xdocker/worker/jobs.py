@@ -53,6 +53,7 @@ def install_docker(package_name, params, instance, deps):
 
     env_part = ""
     instance_envs = instance.get_envs()
+    # expand magic tags
     for key, value in params.get("env", {}).items():
         param_var = braced_param.search(value)
         if param_var:
