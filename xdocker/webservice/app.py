@@ -8,7 +8,6 @@ import logging.handlers
 from flask import Flask, jsonify, request
 from flask.ext.login import LoginManager, UserMixin, current_user, \
         login_required
-from flask.ext.pymongo import PyMongo
 
 import itsdangerous
 from itsdangerous import URLSafeTimedSerializer
@@ -16,9 +15,10 @@ from itsdangerous import URLSafeTimedSerializer
 from rq import Connection, Queue
 from redis import Redis
 
-from worker import jobs
+from worker import jobs, billing
 from worker.exceptions import WorkerException
 from utils import encrypt_key, decrypt_key, get_job_log
+from models import users
 
 
 root_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)
@@ -37,7 +37,6 @@ file_handler.setLevel(logging.DEBUG)
 app.logger.addHandler(log_handler)
 app.logger.addHandler(file_handler)
 
-mongo = PyMongo(app)
 
 redis_conn = Redis()
 q = Queue(connection=redis_conn)
@@ -59,10 +58,10 @@ class User(UserMixin):
         return self._user or self._load_user()
 
     def delete(self):
-        mongo.db.users.remove({"username": self.username})
+        users.remove({"username": self.username})
 
     def _load_user(self):
-        user = mongo.db.users.find_one({"username": self.username})
+        user = users.find_one({"username": self.username})
         if not user:
             raise UserDoesNotExist(self)
         self._user = user
@@ -90,7 +89,7 @@ class User(UserMixin):
         return {"_id": self.user['_id']}
 
     def update(self, data):
-        mongo.db.users.update(self._get_update_dict(), {"$set": data})
+        users.update(self._get_update_dict(), {"$set": data})
         self._load_user()
 
     @classmethod
@@ -104,11 +103,11 @@ class User(UserMixin):
             raise UserAlreadyExists(user)
         data['username'] = username
         data['password'] = cls.hash_pass(password)
-        mongo.db.users.insert(data)
+        users.insert(data)
         return cls(username)
 
     def add_job(self, job_id):
-        mongo.db.users.update(self._get_update_dict(),
+        users.update(self._get_update_dict(),
                 {"$push": {"jobs": job_id}}
                 )
 
