@@ -34,6 +34,7 @@ class AmazonProvider(MixinProvider):
     def __init__(self, params, **kwargs):
         self.region = params.get('instanceRegion', self.default_region)
         self.cidrUI = params.get('ipUI')+'/32'
+        self.billing_bucket = params.get('billingBucket')
 
         super(AmazonProvider, self).__init__(params, **kwargs)
 
@@ -241,7 +242,8 @@ class AmazonInstance(MixinInstance):
         return {
                 "host": self.host,
                 "AWS_ACCESS_KEY_ID": self.provider.access_key,
-                "AWS_SECRET_ACCESS_KEY": self.provider.secret_key
+                "AWS_SECRET_ACCESS_KEY": self.provider.secret_key,
+                "BILLING_BUCKET": self.provider.billing_bucket
                 }
     @property
     def host(self):
