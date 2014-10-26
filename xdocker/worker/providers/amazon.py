@@ -28,6 +28,7 @@ class AmazonProvider(MixinProvider):
     default_region = 'us-west-2'
     default_ami = 'ami-2d9add1d'
     default_instance_type = 't1.micro'
+    default_security_group_name = SECURITY_GROUP_NAME
 
     instance_name_tag = 'Name'
 
@@ -42,15 +43,14 @@ class AmazonProvider(MixinProvider):
         self.access_key = decrypt_key(params.get('apiKey'))
         self.secret_key = decrypt_key(params.get('secretKey'))
         self.iam = None
+        self.security_group_name = self._make_security_group_name()
 
         install_remote_logger('boto')
 
     def _make_security_group_name(self):
-        default_security_group_name = super(AmazonProvider, self)._make_security_group_name()
-        if 'instanceSecurityGroup' in self.init_data:
-            return self.init_data['instanceSecurityGroup']
-        else:
-            return '{}_{}'.format(default_security_group_name, self.region)
+        return self.init_data.get('instanceSecurityGroup',
+                self.default_security_group_name
+                )
 
     def _make_keyname(self):
         default_keyname = super(AmazonProvider, self)._make_keyname()

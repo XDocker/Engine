@@ -26,7 +26,7 @@ MONGO_DBNAME = 'xdocker'
 
 # Worker part
 
-SECURITY_GROUP_NAME = 'xervmon'
+SECURITY_GROUP_NAME = 'xdocker_sg'
 KEY_NAME = 'xervmon'
 KEY_EXTENSION = '.pem'
 

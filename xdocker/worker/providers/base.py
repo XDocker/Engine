@@ -9,7 +9,7 @@ from fabric.context_managers import settings
 from rq import get_current_job
 
 from utils import decrypt_key, get_user_directory
-from config import KEY_EXTENSION, KEY_NAME, MAX_INSTALL_RETRY, SECURITY_GROUP_NAME
+from config import KEY_EXTENSION, KEY_NAME, MAX_INSTALL_RETRY
 from worker.exceptions import KeyDoesNotExist
 
 
@@ -49,7 +49,6 @@ registry = {}
 class MixinProvider(object):
 
     default_keyname = KEY_NAME
-    default_security_group_name = SECURITY_GROUP_NAME
 
     def __init__(self, params, logger=None):
         self.username = params['username']
@@ -57,14 +56,6 @@ class MixinProvider(object):
         self.logger = logger or logging.getLogger(self.username)
         self.init_data = params
         self.keyname = self._make_keyname()
-        self.security_group_name = self._make_security_group_name()
-
-    def _make_security_group_name(self):
-        return self.init_data.get('security_group_name',
-                'xdocker_{}_{}'.format(
-                    self.default_security_group_name, self.username
-                    )
-                )
 
     def _make_keyname(self):
         return self.init_data.get('keyname',
