@@ -53,6 +53,7 @@ class AmazonProvider(MixinProvider):
 
     def _add_default_sgroup_ports(self):
         self.sg_ports.append((DOCKER_PORT, self.cidrUI))
+        self.sg_ports.append((SSH_PORT, self.cidr))
 
     def _make_security_group_name(self):
         return self.init_data.get('instanceSecurityGroup',

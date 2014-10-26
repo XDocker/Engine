@@ -420,6 +420,7 @@ def run_instance():
     :jsonparam string instanceType: Type of the amazon instance (optional)
     :jsonparam string instanceSecurityGroup: Name of amazon security group to use (optional)
     :jsonparam string OS: Type of the OS
+    :jsonparam string ipUI: add to ACL list
     :jsonparam list sgPorts: List of security group ports to expose
     :jsonparam string instanceName: Amazon instance tag with key Name (optional)
     :jsonparam list amazonIAM: list of Amazon IAM rules \
