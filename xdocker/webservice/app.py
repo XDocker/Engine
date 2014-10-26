@@ -379,6 +379,7 @@ def run_instance():
             "packageName": "xdocker/securitymonkey",
             "dockerParams": {"ports": [443, 5000], "env": {}, "tag": "v1",
             "cmd": "/home/ubuntu/securitymonkey.sh"},
+            "sgPorts": [80, 443],
             "apiKey": "<api key>",
             "cloudProvider": "amazon aws",
             "instanceType": "m3.medium",
@@ -419,6 +420,7 @@ def run_instance():
     :jsonparam string instanceType: Type of the amazon instance (optional)
     :jsonparam string instanceSecurityGroup: Name of amazon security group to use (optional)
     :jsonparam string OS: Type of the OS
+    :jsonparam list sgPorts: List of security group ports to expose
     :jsonparam string instanceName: Amazon instance tag with key Name (optional)
     :jsonparam list amazonIAM: list of Amazon IAM rules \
             order of rules is important in some cases
@@ -443,7 +445,8 @@ def run_instance():
     :>json string job_id: Deployment job id
     """
     data = check_args(
-            ('cloudProvider', 'apiKey', 'secretKey', 'packageName', 'OS')
+            ('cloudProvider', 'apiKey', 'secretKey', 'packageName', 'OS',
+            'sgPorts')
             )
     job = q.enqueue_call(jobs.deploy, args=(data,), timeout=1200,
             result_ttl=86400)

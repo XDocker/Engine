@@ -44,8 +44,15 @@ class AmazonProvider(MixinProvider):
         self.secret_key = decrypt_key(params.get('secretKey'))
         self.iam = None
         self.security_group_name = self._make_security_group_name()
+        self.sg_ports = []
+        self._set_sgroup_ports()
 
-        install_remote_logger('boto')
+    def _set_sgroup_ports(self):
+        self.sg_ports = [(port, self.cidr) for port in self.init_data['sgPorts']]
+        self._add_default_sgroup_ports()
+
+    def _add_default_sgroup_ports(self):
+        self.sg_ports.append((DOCKER_PORT, self.cidrUI))
 
     def _make_security_group_name(self):
         return self.init_data.get('instanceSecurityGroup',
@@ -177,20 +184,9 @@ class AmazonProvider(MixinProvider):
                     )
                 raise
 
-        try:
-            group.authorize('tcp', DOCKER_PORT, DOCKER_PORT, self.cidrUI)
-            self.logger.debug("Authorize port {} inside group".format(DOCKER_PORT))
-        except self.connection.ResponseError, e:
-            if e.code == 'InvalidPermission.Duplicate':
-                # Already exists
-                pass
-            else:
-                self.logger.error("Could not authorize the port for security group {}".format(e.code))
-                raise
-
-        for port in (SSH_PORT, HTTP_PORT, HTTPS_PORT):
+        for port, cidr in self.sg_ports:
             try:
-                group.authorize('tcp', port, port, self.cidr)
+                group.authorize('tcp', port, port, cidr)
                 self.logger.debug("Authorize port {} inside group".format(
                     port))
             except self.connection.ResponseError, e:
