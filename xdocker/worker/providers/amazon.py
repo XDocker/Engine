@@ -90,7 +90,7 @@ class AmazonProvider(MixinProvider):
 
 
     def create_instance(self):
-        self.logger.debug("Spinning up new instance")
+        self.logger.info("Spinning up new instance")
         self._create_key()
         self._create_security_group()
         self._create_iam_roles()
@@ -110,13 +110,14 @@ class AmazonProvider(MixinProvider):
         if instance_name:
             instance.add_tag(self.instance_name_tag, instance_name)
         status = instance.update()
+        self.logger.info("Initializing - AMI image {}".format(ami))
         self.logger.debug("Waiting for instance to start")
         while status == 'pending':
             time.sleep(3)
             status = instance.update()
 
         instance = self.get_instance(instance.id)
-        self.logger.info("New aws instance created: {}".format(instance))
+        self.logger.info("New aws instance launched: {}".format(instance))
         return instance
 
     def get_instance(self, instance_id):
@@ -180,6 +181,8 @@ class AmazonProvider(MixinProvider):
         self.iam = profile_name
 
     def _create_security_group(self):
+        logger.info("Processing Job id - Using / Creating security group {}".format(
+            self.security_group_name))
         try:
             group = self.connection.get_all_security_groups(groupnames=[self.security_group_name])[0]
         except self.connection.ResponseError, e:
@@ -211,6 +214,10 @@ class AmazonProvider(MixinProvider):
                     raise
 
     def _create_key(self):
+        self.logger.info(
+                "Processing Job id - Using / Creating Keypair /Name".format(
+                    self.keyname)
+                )
         try:
             key = self.connection.get_all_key_pairs(keynames=[self.keyname])[0]
             if not os.path.exists(self._get_key_path()):

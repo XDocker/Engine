@@ -112,13 +112,15 @@ def init_dependenices(os):
 def deploy(data):
     deps = init_dependenices(data['OS'])
     logger = get_logger()
+    logger.info("Request for deployment received")
     provider = init_provider(data)
     if 'instanceId' in data:
         instance = provider.get_instance(data['instanceId'])
     else:
         instance = provider.create_instance()
+    package = data['packageName']
     with instance.ssh():
-        logger.info("Installing package to {}".format(instance))
+        logger.info("Deploying package {} to {}".format(package, instance))
         i = 0
         failed = True
         time.sleep(20)
@@ -126,7 +128,7 @@ def deploy(data):
             if i > 0:
                 logger.info("Trying install package one more time")
             try:
-                install_docker(data['packageName'], data['dockerParams'],
+                install_docker(package, data['dockerParams'],
                         instance, deps)
                 failed = False
                 break
@@ -137,6 +139,7 @@ def deploy(data):
     if failed:
         logger.error("Could not deploy docker package")
         raise DeployException()
+    logger.info("Deployment done and complete! Cheers")
 
     return {"instance_id": instance.instance_id, "public_dns":
             instance.host, "state": instance.state}

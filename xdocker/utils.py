@@ -80,7 +80,6 @@ def get_logger(username=None):
     username = get_username(username)
     user_directory = get_user_directory(username)
     logger = logging.getLogger(username)
-    logger.setLevel(logging.DEBUG)
     job = get_current_job()
     if not logger.handlers or not LOGGER_HANDLER_NAME in map(lambda l:l.name,
             logger.handlers):
@@ -88,6 +87,7 @@ def get_logger(username=None):
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler = logging.FileHandler(os.path.join(log_directory, job.id))
         handler.setFormatter(formatter)
+        handler.setLevel(logging.INFO)
         handler.name = LOGGER_HANDLER_NAME
         logger.addHandler(handler)
     return logger
