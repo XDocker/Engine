@@ -555,6 +555,8 @@ def job_status(job_id):
 
     if status == 'failed':
         res_dict['job_log'] = get_job_log(current_user.username, job_id)
+        res_dict['fail_code'] = job.meta.get('exc_code')
+        res_dict['fail_message'] = job.meta.get('exc_message')
     elif status == 'finished':
         status = 'Completed'
     res_dict['job_status'] = status

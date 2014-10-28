@@ -14,7 +14,7 @@ from utils import decrypt_key, get_user_directory, install_remote_logger, \
         braced_param
 
 from worker.exceptions import InstanceDoesNotExist, InstanceException, \
-        DeployException
+        DeployException, UnauthorizedKeyError, KeyNotSaved
 from config import USER_DIRECTORY, SSH_PORT, HTTPS_PORT, HTTP_PORT, \
         DOCKER_PORT, SECURITY_GROUP_NAME
 
@@ -77,7 +77,17 @@ class AmazonProvider(MixinProvider):
             aws_access_key_id=self.access_key,
             aws_secret_access_key=self.secret_key
             )
+        self._test_connection(self._connection)
         return self._connection
+
+    def _test_connection(self, conn):
+        try:
+            conn.get_only_instances()
+        except conn.ResponseError as conn_err:
+            if conn_err.code == 'AuthFailure':
+                raise UnauthorizedKeyError()
+            raise
+
 
     def create_instance(self):
         self.logger.debug("Spinning up new instance")
@@ -203,6 +213,8 @@ class AmazonProvider(MixinProvider):
     def _create_key(self):
         try:
             key = self.connection.get_all_key_pairs(keynames=[self.keyname])[0]
+            if not os.path.exists(self._get_key_path()):
+                raise KeyNotSaved()
         except self.connection.ResponseError, e:
             if e.code == 'InvalidKeyPair.NotFound':
                 self.logger.info("Creating new security key")
