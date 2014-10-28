@@ -1,9 +1,11 @@
 from rq import Connection, Queue, Worker
+from worker.exceptions import WorkerException
 
 
 def worker_exc_handler(job, exc_type, exc_value, traceback):
-    job.meta['exc_code'] = exc_type.code
-    job.meta['exc_message'] = exc_type.message
+    if isinstance(exc_type, WorkerException):
+        job.meta['exc_code'] = exc_type.code
+        job.meta['exc_message'] = exc_type.message
     return True
 
 
