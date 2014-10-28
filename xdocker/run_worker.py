@@ -3,7 +3,7 @@ from worker.exceptions import WorkerException
 
 
 def worker_exc_handler(job, exc_type, exc_value, traceback):
-    if isinstance(exc_type, WorkerException):
+    if issubclass(exc_type, WorkerException):
         job.meta['exc_code'] = exc_type.code
         job.meta['exc_message'] = exc_type.message
     return True
