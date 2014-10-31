@@ -181,7 +181,7 @@ class AmazonProvider(MixinProvider):
         self.iam = profile_name
 
     def _create_security_group(self):
-        logger.info("Processing Job id - Using / Creating security group {}".format(
+        self.logger.info("Processing Job id - Using / Creating security group {}".format(
             self.security_group_name))
         try:
             group = self.connection.get_all_security_groups(groupnames=[self.security_group_name])[0]
