@@ -42,8 +42,6 @@ class AmazonProvider(MixinProvider):
         super(AmazonProvider, self).__init__(params, **kwargs)
 
         self._connection = None
-        self.access_key = decrypt_key(params.get('apiKey'))
-        self.secret_key = decrypt_key(params.get('secretKey'))
         self.iam = None
         self.security_group_name = self._make_security_group_name()
         self.sg_ports = []
@@ -75,6 +73,8 @@ class AmazonProvider(MixinProvider):
         return self._connection or self._connect()
 
     def _connect(self):
+        self.access_key = decrypt_key(self.init_data.get('apiKey'))
+        self.secret_key = decrypt_key(self.init_data.get('secretKey'))
         self._connection = boto.ec2.connect_to_region(
             self.region,
             aws_access_key_id=self.access_key,
