@@ -34,7 +34,9 @@ class AmazonProvider(MixinProvider):
 
     def __init__(self, params, **kwargs):
         self.region = params.get('instanceRegion', self.default_region)
-        self.cidrUI = params.get('ipUI')+'/32'
+        self.cidrUI = params.get('ipUI')
+        if self.cidrUI:
+            self.cidrUI += '/32'
         self.billing_bucket = params.get('billingBucket')
 
         super(AmazonProvider, self).__init__(params, **kwargs)
@@ -52,7 +54,8 @@ class AmazonProvider(MixinProvider):
         self._add_default_sgroup_ports()
 
     def _add_default_sgroup_ports(self):
-        self.sg_ports.append((DOCKER_PORT, self.cidrUI))
+        if self.cidrUI:
+            self.sg_ports.append((DOCKER_PORT, self.cidrUI))
         self.sg_ports.append((SSH_PORT, self.cidr))
 
     def _make_security_group_name(self):
