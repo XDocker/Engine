@@ -48,7 +48,8 @@ class AmazonProvider(MixinProvider):
         self._set_sgroup_ports()
 
     def _set_sgroup_ports(self):
-        self.sg_ports = [(port, self.cidr) for port in self.init_data['sgPorts']]
+        self.sg_ports = [(port, self.cidr) for port in
+                self.init_data.get('sgPorts', [])]
         self._add_default_sgroup_ports()
 
     def _add_default_sgroup_ports(self):
