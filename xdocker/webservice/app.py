@@ -731,7 +731,7 @@ def download_key():
     """
     data = check_args(('cloudProvider', ))
     provider = jobs.init_provider(data, True)
-    key = encrypt_key(provider.get_key())
+    key = encrypt_key(provider.get_key(), data['username'])
     return make_response(keyName=provider.keyname, key=key)
 
 
