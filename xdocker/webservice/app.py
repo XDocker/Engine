@@ -688,7 +688,7 @@ def upload_key():
     """
     data = check_args(('cloudProvider', 'key'))
     provider = jobs.init_provider(data, True)
-    key = decrypt_key(data['key'])
+    key = decrypt_key(data['key'], data['username'])
     provider.save_key(key)
     return make_response()
 
