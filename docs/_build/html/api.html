@@ -101,62 +101,6 @@ Content-Type: application/json
 </dd></dl>
 
 <dl class="post">
-<dt id="post--sourceBillingData">
-<tt class="descname">POST </tt><tt class="descname">/sourceBillingData</tt><a class="headerlink" href="#post--sourceBillingData" title="Permalink to this definition">¶</a></dt>
-<dd><p>SourceBillingData</p>
-<p><strong>Example request</strong></p>
-<div class="highlight-http"><div class="highlight"><pre>POST /sourceBillingData HTTP/1.1
-{
-    &quot;token&quot;: &quot;&lt;token&gt;&quot;,
-    &quot;cloudProvider&quot;: &quot;amazon aws&quot;,
-    &quot;apiKey&quot;: &quot;&lt;api key&gt;&quot;,
-    &quot;secretKey&quot;: &quot;&lt;api secret&gt;&quot;,
-    &quot;bucketName&quot;: &quot;&lt;Optional billing bucket&gt;&quot;
-}
-</pre></div>
-</div>
-<p><strong>Example response</strong></p>
-<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="na">Content-Encoding</span><span class="o">:</span> <span class="l">gzip</span>
-<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
-<span class="na">Server</span><span class="o">:</span> <span class="l">nginx/1.1.19</span>
-<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept-Encoding</span>
-
-<span class="p">{</span>
-    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;job_id&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;job id&gt;&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">JSON Parameters:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
-<li><strong>cloudProvider</strong> (<em>string</em>) &#8211; cloud provider name</li>
-<li><strong>apiKey</strong> (<em>string</em>) &#8211; Provider`s api key</li>
-<li><strong>secretKey</strong> (<em>string</em>) &#8211; Provider`s secret key</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
-<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
-<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; not authorized</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
-<li><strong>job_id</strong> (<em>string</em>) &#8211; Deployment job id</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="post">
 <dt id="post--removeUsername">
 <tt class="descname">POST </tt><tt class="descname">/removeUsername</tt><a class="headerlink" href="#post--removeUsername" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove user</p>
@@ -466,6 +410,7 @@ Content-Type: application/json
     &quot;packageName&quot;: &quot;xdocker/securitymonkey&quot;,
     &quot;dockerParams&quot;: {&quot;ports&quot;: [443, 5000], &quot;env&quot;: {}, &quot;tag&quot;: &quot;v1&quot;,
     &quot;cmd&quot;: &quot;/home/ubuntu/securitymonkey.sh&quot;},
+    &quot;sgPorts&quot;: [80, 443],
     &quot;apiKey&quot;: &quot;&lt;api key&gt;&quot;,
     &quot;cloudProvider&quot;: &quot;amazon aws&quot;,
     &quot;instanceType&quot;: &quot;m3.medium&quot;,
@@ -511,6 +456,8 @@ Content-Type: application/json
 <li><strong>instanceType</strong> (<em>string</em>) &#8211; Type of the amazon instance (optional)</li>
 <li><strong>instanceSecurityGroup</strong> (<em>string</em>) &#8211; Name of amazon security group to use (optional)</li>
 <li><strong>OS</strong> (<em>string</em>) &#8211; Type of the OS</li>
+<li><strong>ipUI</strong> (<em>string</em>) &#8211; add to ACL list</li>
+<li><strong>sgPorts</strong> (<em>list</em>) &#8211; List of security group ports to expose</li>
 <li><strong>instanceName</strong> (<em>string</em>) &#8211; Amazon instance tag with key Name (optional)</li>
 <li><strong>amazonIAM</strong> (<em>list</em>) &#8211; list of Amazon IAM rules             order of rules is important in some cases</li>
 <li><strong>amazonIAM.rule</strong> (<em>array</em>) &#8211; array iam rule</li>
