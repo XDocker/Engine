@@ -437,7 +437,8 @@ def run_instance():
     :jsonparam string secretKey: Provider`s secret key
     :jsonparam string packageName: dockerhub package name
     :jsonparam array dockerParams: package params for docker to start
-    :jsonparam list dockerParams.ports: list of ports
+    :jsonparam list dockerParams.ports: list of ports in either format \
+            [443, 500] or [{"in": 443, "out": 443}]
     :jsonparam string dockerParams.tag: docker package tag
     :jsonparam string dockerParams.cmd: docker command to run
     :jsonparam array dockerParams.env: environment variables to pass to docker.  Some values can be templated using brackets e.g. {host} converts to instance`s public dns
