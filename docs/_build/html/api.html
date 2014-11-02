@@ -469,7 +469,7 @@ Content-Type: application/json
 <li><strong>secretKey</strong> (<em>string</em>) &#8211; Provider`s secret key</li>
 <li><strong>packageName</strong> (<em>string</em>) &#8211; dockerhub package name</li>
 <li><strong>dockerParams</strong> (<em>array</em>) &#8211; package params for docker to start</li>
-<li><strong>dockerParams.ports</strong> (<em>list</em>) &#8211; list of ports</li>
+<li><strong>dockerParams.ports</strong> (<em>list</em>) &#8211; list of ports in either format             [443, 500] or [{&#8220;in&#8221;: 443, &#8220;out&#8221;: 443}]</li>
 <li><strong>dockerParams.tag</strong> (<em>string</em>) &#8211; docker package tag</li>
 <li><strong>dockerParams.cmd</strong> (<em>string</em>) &#8211; docker command to run</li>
 <li><strong>dockerParams.env</strong> (<em>array</em>) &#8211; environment variables to pass to docker.  Some values can be templated using brackets e.g. {host} converts to instance`s public dns</li>
