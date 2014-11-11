@@ -64,7 +64,7 @@ def install_docker(package_name, params, instance, deps):
                 continue
             else:
                 value = instance_envs[var_name]
-        env_part += "-e {key}={value} ".format(key=key, value=value)
+        env_part += "-e {key}='{value}' ".format(key=key, value=value)
     env_part = env_part.format(host=env.host_string)
     run_cmd = "docker run {envs} -d -i -t {ports} {name}:{tag} {cmd}".format(
         envs=env_part, ports=port_part, name=package_name,
