@@ -10,6 +10,8 @@ class DeployException(WorkerException):
 class NoSuchProvider(WorkerException):
     message = "No such provider exists"
 
+class WrongPortException(WorkerException):
+    message = "wrong port format"
 
 class InstanceCreateException(WorkerException):
     message = "Could not create instance"
