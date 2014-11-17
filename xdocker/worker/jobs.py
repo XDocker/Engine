@@ -16,7 +16,7 @@ from config import MAX_INSTALL_RETRY
 from utils import decrypt_key, get_user_directory, get_user_log_directory, \
         get_logger, install_remote_logger
 from worker.exceptions import NoSuchProvider, InstanceDoesNotExist, \
-        DeployException
+        DeployException, WrongPortException
 
 
 
@@ -48,8 +48,18 @@ def install_docker(package_name, params, instance, deps):
         logger.exception("Error processing dependencies commands")
         raise DeployException()
     # sudo('service docker start')
-    port_part = " ".join(["-p {port}:{port}".format(port=port)
-        for port in params.get("ports", [])])
+    port_part = ""
+    for port in params.get("ports", []):
+        if isinstance(port, dict):
+            out_port = port['out']
+            in_port = port['in']
+        elif isinstance(port, int):
+            out_port = in_port = port
+        else:
+            raise WrongPortException()
+
+        port_part = " -p {out_port}:{in_port}".format(
+                out_port=out_port, in_port=in_port)
 
     env_part = ""
     instance_envs = instance.get_envs()
