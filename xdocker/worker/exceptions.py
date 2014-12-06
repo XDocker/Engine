@@ -32,10 +32,20 @@ class InstanceDoesNotExist(InstanceException):
 class ConnectionError(WorkerException):
     message = "Connection error"
 
+class UnauthorizedError(ConnectionError):
+    message = "Unauthorized"
+    code = "BadAuth"
 
-class UnauthorizedKeyError(ConnectionError):
+class UnauthorizedKeyError(UnauthorizedError):
     message = "Cannot connect using given key"
     code = "BadKey"
+
+
+class PermissionError(UnauthorizedError):
+    message = "Not enough permissions"
+    code = "UnauthorizedOperation"
+
+
 
 
 class KeyNotSaved(WorkerException):

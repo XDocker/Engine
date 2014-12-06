@@ -14,7 +14,7 @@ from utils import decrypt_key, get_user_directory, install_remote_logger, \
         braced_param
 
 from worker.exceptions import InstanceDoesNotExist, InstanceException, \
-        DeployException, UnauthorizedKeyError, KeyNotSaved
+        DeployException, UnauthorizedKeyError, KeyNotSaved, PermissionError
 from config import USER_DIRECTORY, SSH_PORT, HTTPS_PORT, HTTP_PORT, \
         DOCKER_PORT, SECURITY_GROUP_NAME
 
@@ -95,21 +95,31 @@ class AmazonProvider(MixinProvider):
 
     def create_instance(self):
         self.logger.info("Spinning up new instance")
-        self._create_key()
-        self._create_security_group()
-        self._create_iam_roles()
+        try:
+            self._create_key()
+            self._create_security_group()
+            self._create_iam_roles()
+        except self.connection.ResponseError as conn_err:
+            if conn_err.code == 'UnauthorizedOperation':
+                raise PermissionError()
+            raise
 
         ami = self.init_data.get("instanceAmi", self.default_ami)
         instance_name = self.init_data.get("instanceName")
         instance_type = self.init_data.get("instanceType",
                 self.default_instance_type)
-        reservation = self.connection.run_instances(
+        try:
+            reservation = self.connection.run_instances(
                 ami,
                 key_name=self.keyname,
                 security_groups=[self.security_group_name],
                 instance_profile_name=self.iam,
                 instance_type=instance_type
                 )
+        except self.connection.ResponseError as conn_err:
+            if conn_err.code == 'UnauthorizedOperation':
+                raise PermissionError()
+            raise
         instance = reservation.instances[0]
         if instance_name:
             instance.add_tag(self.instance_name_tag, instance_name)
