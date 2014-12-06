@@ -8,7 +8,7 @@ from zope.interface import Interface, Attribute
 from fabric.context_managers import settings
 from rq import get_current_job
 
-from utils import decrypt_key, get_user_directory
+from utils import decrypt_key, get_user_directory, hash_value
 from config import KEY_EXTENSION, KEY_NAME, MAX_INSTALL_RETRY
 from worker.exceptions import KeyDoesNotExist
 
@@ -55,14 +55,25 @@ class MixinProvider(object):
         self.user_directory = get_user_directory(self.username)
         self.logger = logger or logging.getLogger(self.username)
         self.init_data = params
+        self._process_creds()
         self.keyname = self._make_keyname()
 
+    def _process_creds(self):
+        raise NotImplementedError()
+
+    def get_creds(self):
+        raise NotImplementedError()
+
+
     def _make_keyname(self):
-        return self.init_data.get('keyname',
+        keyname = self.init_data.get('keyname',
                 'xdocker_{}_{}'.format(
                     self.default_keyname, self.username
                     )
                 )
+        cred_prefix = hash_value(''.join(self.get_creds()))
+        keyname = "{}_{}".format(cred_prefix, keyname)
+        return keyname
 
     def _get_key_path(self):
         return os.path.join(self.user_directory, "{}{}".format(self.keyname,

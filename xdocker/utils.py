@@ -17,9 +17,13 @@ def init_encryptor(username):
     username = get_username(username)
     AES.key_size = 128
     iv = ENCRYPTION_KEY
-    key = md5.md5(username).hexdigest()
+    key = hash_value(username)
     encr_obj = AES.new(key=key, IV=iv, mode=AES.MODE_CBC)
     return encr_obj
+
+
+def hash_value(val):
+    return md5.md5(val).hexdigest()
 
 
 def pad_string(string):
