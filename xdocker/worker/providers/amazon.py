@@ -73,9 +73,15 @@ class AmazonProvider(MixinProvider):
     def connection(self):
         return self._connection or self._connect()
 
-    def _connect(self):
+
+    def get_creds(self):
+        return (self.access_key, self.secret_key)
+
+    def _process_creds(self):
         self.access_key = decrypt_key(self.init_data.get('apiKey'))
         self.secret_key = decrypt_key(self.init_data.get('secretKey'))
+
+    def _connect(self):
         self._connection = boto.ec2.connect_to_region(
             self.region,
             aws_access_key_id=self.access_key,
@@ -229,7 +235,7 @@ class AmazonProvider(MixinProvider):
 
     def _create_key(self):
         self.logger.info(
-                "Processing Job id - Using / Creating Keypair /Name".format(
+                "Processing Job id - Using / Creating Keypair /Name {}".format(
                     self.keyname)
                 )
         try:
