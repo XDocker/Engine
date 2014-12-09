@@ -58,7 +58,7 @@ def install_docker(package_name, params, instance, deps):
         else:
             raise WrongPortException()
 
-        port_part = " -p {out_port}:{in_port}".format(
+        port_part += " -p {out_port}:{in_port}".format(
                 out_port=out_port, in_port=in_port)
 
     env_part = ""
