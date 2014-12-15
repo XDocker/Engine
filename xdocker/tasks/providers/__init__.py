@@ -1,5 +1,5 @@
-from amazon import AmazonProvider
-from base import registry
+from .amazon import AmazonProvider
+from .base import registry
 
 providers = [
         'AmazonProvider'

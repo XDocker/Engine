@@ -7,19 +7,18 @@ import time
 import json
 from fabric.context_managers import settings
 from fabric.api import env, sudo, put
-from rq import get_current_job
 
-from providers import registry
+from .providers import registry
 
-from config import DEPS_FILE
-from config import MAX_INSTALL_RETRY
-from utils import decrypt_key, get_user_directory, get_user_log_directory, \
-        get_logger, install_remote_logger
-from worker.exceptions import NoSuchProvider, InstanceDoesNotExist, \
+from ..config import DEPS_FILE, MAX_INSTALL_RETRY
+from ..utils import decrypt_key, get_logger, install_remote_logger
+from ..celery import celery
+from .worker_exceptions import NoSuchProvider, InstanceDoesNotExist, \
         DeployException, WrongPortException
 
 
 
+@celery.task(name='jobs.instance_action')
 def instance_action(data):
     action = data['instanceAction']
     instance_id = data['instanceId']
@@ -119,6 +118,7 @@ def init_dependenices(os):
     return deps
 
 
+@celery.task(name='jobs.deploy')
 def deploy(data):
     deps = init_dependenices(data['OS'])
     logger = get_logger()

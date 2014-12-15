@@ -4,6 +4,7 @@ ROOT_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)
 DATA_DIRECTORY = os.path.join(ROOT_PATH, os.pardir, 'data')
 USER_DIRECTORY = os.path.join(DATA_DIRECTORY, 'users')
 LOG_DIRECTORY_NAME = 'logs'
+LOGGER_HANDLER_NAME = "xdocker"
 
 for direc in (DATA_DIRECTORY, USER_DIRECTORY):
     if not os.path.exists(direc):
@@ -22,6 +23,8 @@ ENCRYPTION_KEY = "741952hheeyy66#c"
 TOKEN_EXPIRES = 12000
 
 MONGO_DBNAME = 'xdocker'
+MONGO_HOST = '127.0.0.1'
+MONGO_PORT = 27017
 
 
 # Worker part
@@ -38,3 +41,18 @@ SSH_PORT = 22
 HTTP_PORT = 80
 HTTPS_PORT = 443
 DOCKER_PORT = 4243
+
+# Celery worker part
+# CELERY_ALWAYS_EAGER = True
+CELERY_PREFIX = "xdocker"
+CELERY_RESULT_BACKEND = 'mongodb'
+CELERY_MONGODB_BACKEND_SETTINGS = {
+                'host': MONGO_HOST,
+                'port': MONGO_PORT,
+                'database': MONGO_DBNAME,
+                'taskmeta_collection': 'celery_taskmeta',
+                }
+
+CELERY_BROKER_URL = "mongodb://{host}:{port}/{db}".format(
+    host=MONGO_HOST, port=MONGO_PORT, db=MONGO_DBNAME)
+

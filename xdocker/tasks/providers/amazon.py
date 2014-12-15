@@ -6,16 +6,15 @@ import json
 import boto
 import boto.ec2
 
-from base import IProvider, MixinProvider, IInstance, MixinInstance
+from .base import IProvider, MixinProvider, IInstance, MixinInstance
 
 import logging
 
-from utils import decrypt_key, get_user_directory, install_remote_logger, \
-        braced_param
+from ...utils import braced_param
 
-from worker.exceptions import InstanceDoesNotExist, InstanceException, \
+from ..worker_exceptions import InstanceDoesNotExist, InstanceException, \
         DeployException, UnauthorizedKeyError, KeyNotSaved, PermissionError
-from config import USER_DIRECTORY, SSH_PORT, HTTPS_PORT, HTTP_PORT, \
+from ...config import USER_DIRECTORY, SSH_PORT, HTTPS_PORT, HTTP_PORT, \
         DOCKER_PORT, SECURITY_GROUP_NAME
 
 
@@ -78,8 +77,8 @@ class AmazonProvider(MixinProvider):
         return (self.access_key, self.secret_key)
 
     def _process_creds(self):
-        self.access_key = decrypt_key(self.init_data.get('apiKey'))
-        self.secret_key = decrypt_key(self.init_data.get('secretKey'))
+        self.access_key = self.decrypt_key(self.init_data.get('apiKey'))
+        self.secret_key = self.decrypt_key(self.init_data.get('secretKey'))
 
     def _connect(self):
         self._connection = boto.ec2.connect_to_region(
