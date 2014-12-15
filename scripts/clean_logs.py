@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import sys
 import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+
 import datetime
 
-from config import USER_DIRECTORY, LOG_DIRECTORY_NAME, STORE_LOGS
+from xdocker.config import USER_DIRECTORY, LOG_DIRECTORY_NAME, STORE_LOGS
 
 
 NOW = datetime.datetime.now()

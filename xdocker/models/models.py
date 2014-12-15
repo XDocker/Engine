@@ -1,7 +1,7 @@
 import pymongo
-from config import MONGO_DBNAME
+from ..config import MONGO_DBNAME, MONGO_HOST, MONGO_PORT
 
-db = pymongo.MongoClient()[MONGO_DBNAME]
+db = pymongo.MongoClient(MONGO_HOST, MONGO_PORT)[MONGO_DBNAME]
 
 billing_users = db.billing_users
 billing_data = db.billing_data

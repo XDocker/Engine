@@ -8,9 +8,9 @@ from zope.interface import Interface, Attribute
 from fabric.context_managers import settings
 from rq import get_current_job
 
-from utils import decrypt_key, get_user_directory, hash_value
-from config import KEY_EXTENSION, KEY_NAME, MAX_INSTALL_RETRY
-from worker.exceptions import KeyDoesNotExist
+from ...utils import decrypt_key, hash_value, get_user_directory
+from ...config import KEY_EXTENSION, KEY_NAME, MAX_INSTALL_RETRY
+from ..worker_exceptions import KeyDoesNotExist
 
 
 class IProvider(Interface):
@@ -57,6 +57,9 @@ class MixinProvider(object):
         self.init_data = params
         self._process_creds()
         self.keyname = self._make_keyname()
+
+    def decrypt_key(self, val):
+        return decrypt_key(val, self.username)
 
     def _process_creds(self):
         raise NotImplementedError()

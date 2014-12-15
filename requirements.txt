@@ -1,10 +1,11 @@
 Flask
 Flask-Login
 itsdangerous
-rq
 boto
 fabric
 zope.interface
 pymongo
 Flask-PyMongo
 PyCrypto
+Flask-Script
+Celery
