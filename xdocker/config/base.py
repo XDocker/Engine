@@ -50,5 +50,5 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
                 'taskmeta_collection': 'celery_taskmeta',
                 }
 
-CELERY_BROKER_URL = "mongodb://127.0.0.1:27017/{}".format(MONGO_DBNAME)
+CELERY_BROKER_URL = "{}/{}".format(MONGO_CONN, MONGO_DBNAME)
 

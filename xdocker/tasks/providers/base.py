@@ -6,7 +6,6 @@ import logging
 
 from zope.interface import Interface, Attribute
 from fabric.context_managers import settings
-from rq import get_current_job
 
 from ...utils import decrypt_key, hash_value, get_user_directory
 from ...config import KEY_EXTENSION, KEY_NAME, MAX_INSTALL_RETRY

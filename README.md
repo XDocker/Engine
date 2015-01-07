@@ -1,7 +1,7 @@
 # H1 Engine
 ======
 1. Flask
-2. python-rq
+2. celery
 3. boto
 4. fabric
 5. zope.interface

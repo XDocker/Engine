@@ -9,3 +9,4 @@ Flask-PyMongo
 PyCrypto
 Flask-Script
 Celery
+gunicorn
