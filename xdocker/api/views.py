@@ -10,6 +10,11 @@ from ..tasks import jobs
 api = Blueprint('api', __name__)
 
 
+@api.route("/test")
+def test():
+    return 'test'
+
+
 @api.route("/run", methods=["POST"])
 @login_required
 def run_instance():
