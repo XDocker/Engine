@@ -1,7 +1,8 @@
 import os
 
-ROOT_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)
-DATA_DIRECTORY = os.path.join(ROOT_PATH, os.pardir, 'data')
+ROOT_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir,
+        os.pardir)
+DATA_DIRECTORY = os.path.join(ROOT_PATH, 'data')
 USER_DIRECTORY = os.path.join(DATA_DIRECTORY, 'users')
 LOG_DIRECTORY_NAME = 'logs'
 LOGGER_HANDLER_NAME = "xdocker"
@@ -10,7 +11,7 @@ for direc in (DATA_DIRECTORY, USER_DIRECTORY):
     if not os.path.exists(direc):
         os.mkdir(direc)
 
-DEPS_FILE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates','os_dependency_username.json')
+DEPS_FILE = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir, 'templates','os_dependency_username.json')
 # Webservice part
 
 DEBUG = True
